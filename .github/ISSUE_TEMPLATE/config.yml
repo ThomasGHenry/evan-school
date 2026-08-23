@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Project PRD
+    url: https://github.com/ThomasGHenry/tgh-template/blob/main/PRD.md
+    about: Purpose, architecture, and acceptance criteria
+  - name: CLAUDE.md / AGENTS.md
+    url: https://github.com/ThomasGHenry/tgh-template/blob/main/AGENTS.md
+    about: Development conventions and bootstrap guide

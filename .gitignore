@@ -1,0 +1,31 @@
+# dependencies
+node_modules/
+
+# build outputs
+dist/
+.next/
+out/
+
+# nx cache
+.nx/
+
+# vercel
+.vercel/
+
+# env files
+.env
+.env.*
+!.env.example
+
+# OS
+.DS_Store
+
+# editors
+.idea/
+*.sw?
+
+# unignore files blocked by global gitignore
+!CLAUDE.md
+
+# test coverage
+coverage/

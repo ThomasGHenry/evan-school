@@ -1,0 +1,74 @@
+installed: []
+settings:
+  auto_execute_hooks: true
+hooks:
+  before_specify:
+  - extension: git
+    command: speckit.git.feature
+    enabled: true
+    optional: false
+    prompt: Execute speckit.git.feature?
+    description: Create feature branch before specification
+    condition: null
+  before_implement:
+  - extension: qcode
+    command: qcode
+    enabled: true
+    optional: false
+    prompt: null
+    description: Load /qcode process lens (TDD + Clean Code + qreview planning preamble) before implementation
+    condition: null
+  - extension: git
+    command: speckit.git.commit
+    enabled: true
+    optional: true
+    prompt: Commit outstanding changes before implementation?
+    description: Auto-commit before implementation
+    condition: null
+  after_implement:
+  - extension: qreview
+    command: qreview
+    enabled: true
+    optional: false
+    prompt: null
+    description: Run /qreview completeness and quality check after implementation
+    condition: null
+  - extension: git
+    command: speckit.git.commit
+    enabled: true
+    optional: true
+    prompt: Commit implementation changes?
+    description: Auto-commit after implementation
+    condition: null
+  after_specify:
+  - extension: git
+    command: speckit.git.commit
+    enabled: true
+    optional: true
+    prompt: Commit specification changes?
+    description: Auto-commit after specification
+    condition: null
+  after_clarify:
+  - extension: git
+    command: speckit.git.commit
+    enabled: true
+    optional: true
+    prompt: Commit clarification changes?
+    description: Auto-commit after spec clarification
+    condition: null
+  after_plan:
+  - extension: git
+    command: speckit.git.commit
+    enabled: true
+    optional: true
+    prompt: Commit plan changes?
+    description: Auto-commit after implementation planning
+    condition: null
+  after_tasks:
+  - extension: git
+    command: speckit.git.commit
+    enabled: true
+    optional: true
+    prompt: Commit task changes?
+    description: Auto-commit after task generation
+    condition: null

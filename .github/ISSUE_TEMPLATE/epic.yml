@@ -1,0 +1,70 @@
+name: Epic
+description: Milestone-scoped grouping of related issues with a shared outcome
+title: "[Epic]: "
+labels:
+  - epic
+  - needs-triage
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Epic
+
+        An epic is a **GitHub milestone container** — it defines an outcome, scopes what
+        belongs, and tracks progress via child issues.
+
+        **Workflow:** Epic → Create matching GitHub milestone → Assign child issues → Work
+        child issues via spec-kit
+
+        Epics do **not** go through `/speckit-specify`. They are briefs, not specs.
+
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal
+      description: What outcome does completing this epic deliver? One sentence, outcome-framed.
+      placeholder: |
+        Users can complete the core workflow end-to-end without manual intervention.
+    validations:
+      required: true
+
+  - type: textarea
+    id: success_criterion
+    attributes:
+      label: Success Criterion
+      description: Measurable, observable signal that this epic is done. Avoid "all issues closed" — that is process, not outcome.
+      placeholder: |
+        A real user completes the workflow on a production environment and reports no blockers.
+    validations:
+      required: true
+
+  - type: textarea
+    id: child_issues
+    attributes:
+      label: Child Issues
+      description: Known issues that belong under this epic. Add more as they are filed.
+      placeholder: |
+        - [ ] #1 Foundation work
+        - [ ] #2 Core feature
+        - [ ] (unfiled) follow-on work
+    validations:
+      required: false
+
+  - type: textarea
+    id: out_of_scope
+    attributes:
+      label: Out of Scope
+      description: What explicitly does NOT belong in this epic, to prevent scope creep.
+    validations:
+      required: false
+
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Blockers / Dependencies
+      description: Epics or ADRs that must complete before this one can start or finish.
+      placeholder: |
+        - Blocked by: ADR-0XXX decision
+        - Depends on: other-epic-name
+    validations:
+      required: false

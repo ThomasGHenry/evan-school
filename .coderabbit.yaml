@@ -1,0 +1,11 @@
+language: en-US
+reviews:
+  auto_review:
+    enabled: true
+    drafts: false
+  finishing_touches:
+    docstrings:
+      enabled: false
+  request_changes_workflow: false
+chat:
+  auto_reply: true

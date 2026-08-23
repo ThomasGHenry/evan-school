@@ -1,0 +1,83 @@
+name: Infrastructure
+
+on:
+  push:
+    branches: [main]
+    paths: ['infra/**', '.github/workflows/infra.yml']
+  pull_request:
+    paths: ['infra/**', '.github/workflows/infra.yml']
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  plan:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/create-github-app-token@v1
+        id: app-token
+        with:
+          app-id: ${{ vars.GH_AUTO_MERGE_APP_ID }}
+          private-key: ${{ secrets.GH_AUTO_MERGE_APP_PRIVATE_KEY }}
+          permission-contents: read
+          permission-administration: read
+      - uses: opentofu/setup-opentofu@v1
+        with: { tofu_version: '1.9.0' }
+      - run: tofu init
+        working-directory: infra/github
+        env:
+          TF_VAR_github_token: ${{ steps.app-token.outputs.token }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.CF_R2_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.CF_R2_SECRET_ACCESS_KEY }}
+      - name: Tofu Plan
+        id: plan
+        run: tofu plan -no-color 2>&1 | tee /tmp/plan_output.txt; exit "${PIPESTATUS[0]}"
+        working-directory: infra/github
+        env:
+          TF_VAR_github_token: ${{ steps.app-token.outputs.token }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.CF_R2_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.CF_R2_SECRET_ACCESS_KEY }}
+      - name: Post plan comment
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.number }}
+        run: |
+          plan_output="$(cat /tmp/plan_output.txt)"
+          gh pr comment "$PR_NUMBER" --body "## Tofu Plan
+          \`\`\`
+          ${plan_output}
+          \`\`\`"
+
+  apply:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/create-github-app-token@v1
+        id: app-token
+        with:
+          app-id: ${{ vars.GH_AUTO_MERGE_APP_ID }}
+          private-key: ${{ secrets.GH_AUTO_MERGE_APP_PRIVATE_KEY }}
+          permission-contents: read
+          permission-administration: write
+      - uses: opentofu/setup-opentofu@v1
+        with: { tofu_version: '1.9.0' }
+      - run: tofu init
+        working-directory: infra/github
+        env:
+          TF_VAR_github_token: ${{ steps.app-token.outputs.token }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.CF_R2_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.CF_R2_SECRET_ACCESS_KEY }}
+      - run: tofu apply -auto-approve
+        working-directory: infra/github
+        env:
+          TF_VAR_github_token: ${{ steps.app-token.outputs.token }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.CF_R2_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.CF_R2_SECRET_ACCESS_KEY }}
