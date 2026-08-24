@@ -10,7 +10,6 @@ This file is the canonical agent entry point for this repository. `CLAUDE.md` an
 | Governing rule + governance philosophy | `.specify/memory/constitution.md` |
 | Product requirements + rationale | `PRD.md` |
 | Architectural decisions | `docs/adr/` (template: 0001–0099; instances: 0100+) |
-| Tactical decisions (non-ADR) | `DECISIONS.md` |
 | CI pipeline | `.github/workflows/1-commit.yml` |
 | IaC — one-time bootstrap | `infra/bootstrap/` |
 | IaC — GitHub config (pipeline-managed) | `infra/github/` |
@@ -59,7 +58,7 @@ Three-layer model:
   instantiated project builds its own Layer 2 on top.
 
 Full design rationale: `PRD.md`. Key decisions: `docs/adr/`. Governance philosophy:
-`.specify/memory/constitution.md`. Tactical decisions: `DECISIONS.md`.
+`.specify/memory/constitution.md`.
 
 ## Commands
 
