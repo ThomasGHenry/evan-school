@@ -1,5 +1,5 @@
 {
-  "name": "@template/ui",
+  "name": "@evan-school/ui",
   "version": "0.0.0",
   "private": true,
   "main": "./src/index.ts",

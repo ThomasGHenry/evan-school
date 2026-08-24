@@ -1,5 +1,5 @@
 {
-  "name": "@template/config",
+  "name": "@evan-school/config",
   "version": "0.0.0",
   "private": true,
   "main": "./src/index.ts",
@@ -8,9 +8,11 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
   },
+  "dependencies": {
+    "zod": "^3.23.0"
+  },
   "devDependencies": {
     "typescript": "^5.8.0",
-    "zod": "^3.23.0",
     "vitest": "^3.0.0"
   }
 }

@@ -1,5 +1,5 @@
 {
-  "name": "@template/web-e2e",
+  "name": "@evan-school/web-e2e",
   "version": "0.0.0",
   "private": true,
   "scripts": {

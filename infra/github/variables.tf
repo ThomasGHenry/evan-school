@@ -7,7 +7,7 @@ variable "github_token" {
 variable "repo_name" {
   description = "Repository name"
   type        = string
-  default     = "tgh-template"
+  default     = "evan-school"
 }
 
 variable "repo_owner" {

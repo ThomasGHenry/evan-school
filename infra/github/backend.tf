@@ -1,9 +1,9 @@
 terraform {
   backend "s3" {
-    bucket                      = "PLACEHOLDER-state-bucket-name"
+    bucket                      = "evan-school-tfstate"
     key                         = "github/terraform.tfstate"
     region                      = "auto"
-    endpoint                    = "https://PLACEHOLDER-cf-account-id.r2.cloudflarestorage.com"
+    endpoint                    = "https://f6c1744bbffb823f40e0e8abc9555cf2.r2.cloudflarestorage.com"
     skip_credentials_validation = true
     skip_metadata_api_check     = true
     skip_region_validation      = true
