@@ -1,21 +1,17 @@
 # Project Constitution
 
-> This file was generated during onboarding of the tgh-template repository.
-> Instantiators: replace the PLACEHOLDER sections with your project's specifics.
-> Delete the MDE-specific section entirely and replace with your domain model.
-
 ---
 
 ## Project Identity
 
 | Field | Value |
 |---|---|
-| **Repo name** | PLACEHOLDER (e.g. `my-project`) |
-| **Owner** | PLACEHOLDER (GitHub username or org) |
-| **Description** | PLACEHOLDER (one sentence) |
+| **Repo name** | `evan-school` |
+| **Owner** | `ThomasGHenry` |
+| **Description** | Evan's Meditation School — live meditation courses, mailing list, and student dashboard |
 | **Visibility** | public |
 | **Instantiated from** | `ThomasGHenry/tgh-template` |
-| **Instantiation date** | PLACEHOLDER |
+| **Instantiation date** | 2026-08-23 |
 
 ---
 
@@ -148,25 +144,38 @@ Do not revisit during implementation. These are closed decisions.
 
 ---
 
-## MDE-Specific Section (PLACEHOLDER — Remove This Section)
+## Domain Model — Evan's Meditation School
 
-> If instantiating the Market Denoising Engine (MDE), replace this entire section with
-> your domain model. For all other projects, delete this section entirely.
+**Repo:** `evan-school` | **Instantiated:** 2026-08-23
 
-### Domain Model (MDE)
+### Entities
 
-PLACEHOLDER — MDE instantiator: populate from `packages/scoring/` domain design.
+| Entity | Table | Key fields |
+|---|---|---|
+| `User` | `users` | `id`, `email`, `role` (enum), `mailchimpId` |
+| `Course` | `courses` | `id`, `slug`, `title`, `zoomLink`, `recordingUrl`, `status` (enum) |
+| `CourseContent` | `course_content` | `courseId`, `section` (enum), `contentUrl`, `sortOrder` |
+| `Enrollment` | `enrollments` | `userId`, `courseId`, `paidAt`, `paymentRef`, `accessGranted` |
+| `Post` | `posts` | `slug`, `title`, `body`, `seoMeta`, `publishedAt` |
+| `Resource` | `resources` | `slug`, `title`, `contentType`, `contentUrl`, `publishedAt` |
 
-Key domain entities:
-- `Engineer` — subject being evaluated
-- `Seller` — evaluator context
-- `Generation` — one evaluation event
-- `FitnessInput` — raw signal inputs to the scoring formula
-- `FitnessResult` — scored output with `signal`, `noise`, `fitness` fields
+### Access Tiers (UserRole enum)
 
-Key invariants:
-- `fitness = signal / (signal + noise)` — always in [0, 1]
-- `default_v0` formula is the initial scoring algorithm; versioned for future replacement
-- All scoring logic lives in `packages/scoring/` (Layer 2, not in template)
+| Tier | Role | Routes |
+|---|---|---|
+| 0 | Anonymous | `/`, `/blog/**`, `/courses`, `/courses/[slug]`, `/checkout`, `/login`, `/signup` |
+| 1 | SUBSCRIBER | above + `/resources/**`, `/account` |
+| 2 | STUDENT | above + `/dashboard`, `/courses/[slug]/content` (scoped to enrolled courses) |
+| 3 | ADMIN | everything + `/admin/**` |
 
-Replace this section with your actual domain model before first production code commit.
+### Key Invariants
+
+- `Enrollment.accessGranted = true` is required for a STUDENT to access a course's content. Middleware gates authentication; route handlers gate per-course authorization via the enrollments table.
+- Course content visibility follows `ContentSection` ordering: INTRO → SETTING_THE_STAGE → ZOOM_LINK → RECORDING_LINK → MEDITATION_RESOURCES.
+- A student enrolled in Course A has no access to Course B (scoped enrollments, not blanket role).
+- `User.mailchimpId` mirrors the MailChimp subscriber ID; kept in sync on enrollment and signup.
+- Payments are single-transaction only (no subscriptions). `Enrollment.paymentRef` stores the PayPal IPN transaction ID at MVP.
+
+### Auth
+
+Clerk (`@clerk/nextjs`) manages session tokens and UI flows. `User.role` in our DB drives tier-based authorization. See ADR 0100.

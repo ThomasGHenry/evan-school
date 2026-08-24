@@ -40,7 +40,7 @@ export default [
         {
           patterns: [
             {
-              group: ['@prisma/client', '@template/db'],
+              group: ['@prisma/client', '@evan-school/db'],
               message: 'Domain must not import database concerns directly. Import types only via the db package type exports.',
             },
           ],

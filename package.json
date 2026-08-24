@@ -1,5 +1,5 @@
 {
-  "name": "tgh-template",
+  "name": "evan-school",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -33,6 +33,7 @@
     "typescript-eslint": "^8.0.0",
     "eslint-plugin-react": "^7.37.0",
     "eslint-plugin-react-hooks": "^5.0.0",
+    "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-jsx-a11y": "^6.10.0"
   }
 }

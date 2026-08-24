@@ -1,7 +1,7 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  transpilePackages: ['@template/ui'],
+  transpilePackages: ['@evan-school/ui'],
 };
 
 export default nextConfig;

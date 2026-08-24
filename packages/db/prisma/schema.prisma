@@ -6,10 +6,103 @@ datasource db {
   provider = "postgresql"
 }
 
+enum UserRole {
+  ANONYMOUS
+  SUBSCRIBER
+  STUDENT
+  ADMIN
+}
+
+enum CourseStatus {
+  DRAFT
+  UPCOMING
+  LIVE
+  COMPLETED
+}
+
+enum ContentSection {
+  INTRO
+  SETTING_THE_STAGE
+  ZOOM_LINK
+  RECORDING_LINK
+  MEDITATION_RESOURCES
+}
+
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  name      String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           String       @id @default(cuid())
+  email        String       @unique
+  role         UserRole     @default(SUBSCRIBER)
+  mailchimpId  String?      @unique @map("mailchimp_id")
+  createdAt    DateTime     @default(now()) @map("created_at")
+  enrollments  Enrollment[]
+
+  @@map("users")
+}
+
+model Course {
+  id          String          @id @default(cuid())
+  slug        String          @unique
+  title       String
+  description String
+  zoomLink    String?         @map("zoom_link")
+  recordingUrl String?        @map("recording_url")
+  status      CourseStatus    @default(DRAFT)
+  publishedAt DateTime?       @map("published_at")
+  createdAt   DateTime        @default(now()) @map("created_at")
+  content     CourseContent[]
+  enrollments Enrollment[]
+
+  @@map("courses")
+}
+
+model CourseContent {
+  id          String         @id @default(cuid())
+  courseId    String         @map("course_id")
+  section     ContentSection
+  contentType String         @map("content_type")
+  contentUrl  String         @map("content_url")
+  sortOrder   Int            @default(0) @map("sort_order")
+  createdAt   DateTime       @default(now()) @map("created_at")
+  course      Course         @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@map("course_content")
+}
+
+model Enrollment {
+  id           String   @id @default(cuid())
+  userId       String   @map("user_id")
+  courseId     String   @map("course_id")
+  paidAt       DateTime @map("paid_at")
+  paymentRef   String   @map("payment_ref")
+  accessGranted Boolean @default(true) @map("access_granted")
+  createdAt    DateTime @default(now()) @map("created_at")
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course       Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId])
+  @@map("enrollments")
+}
+
+model Post {
+  id          String    @id @default(cuid())
+  slug        String    @unique
+  title       String
+  body        String
+  seoMeta     Json?     @map("seo_meta")
+  publishedAt DateTime? @map("published_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  @@map("posts")
+}
+
+model Resource {
+  id          String    @id @default(cuid())
+  slug        String    @unique
+  title       String
+  contentType String    @map("content_type")
+  contentUrl  String    @map("content_url")
+  publishedAt DateTime? @map("published_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  @@map("resources")
 }

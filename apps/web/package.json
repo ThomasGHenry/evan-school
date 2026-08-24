@@ -1,5 +1,5 @@
 {
-  "name": "@template/web",
+  "name": "@evan-school/web",
   "version": "0.0.0",
   "private": true,
   "scripts": {
@@ -10,9 +10,10 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@template/config": "workspace:*",
-    "@template/db": "workspace:*",
-    "@template/ui": "workspace:*",
+    "@clerk/nextjs": "^6.0.0",
+    "@evan-school/config": "workspace:*",
+    "@evan-school/db": "workspace:*",
+    "@evan-school/ui": "workspace:*",
     "next": "^15.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
