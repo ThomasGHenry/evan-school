@@ -10,11 +10,6 @@ Write an ADR when:
 - Establishing a pattern that will be followed across the codebase
 - Deciding between multiple reasonable alternatives
 
-Write a DECISIONS.md entry (not an ADR) when:
-- The decision is tactical, not strategic
-- No alternatives were seriously considered
-- The decision can be reversed easily
-
 ## ADR Format
 
 See `0000-template.md` for the format specification.

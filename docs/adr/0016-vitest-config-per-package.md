@@ -37,7 +37,7 @@ passing trivially.
    one test before the package is considered complete.
 
 3. `packages/ui` does not contain logic — it contains React components. A decision must be
-   recorded (here or in DECISIONS.md) on whether UI unit tests are in scope for the template.
+   recorded (in an ADR) on whether UI unit tests are in scope for the template.
    Until that decision is made, `packages/ui` is explicitly excluded from the `test` target.
 
 4. Each Vitest config file must be present before any test is written for that package — the
