@@ -89,6 +89,19 @@ fixture_commit() {
   [ "$status" -eq 0 ]
 }
 
+@test "GitHub test-merge SHA commit is skipped" {
+  local sha1 sha2 before
+  sha1="$(git rev-parse HEAD)"
+  sha2="$(printf '%040d' 0)"
+  before="$(git rev-parse HEAD)"
+  fixture_commit "Merge ${sha1} into ${sha2}"
+  export GITHUB_EVENT_NAME=push
+  export GITHUB_SHA="$(git rev-parse HEAD)"
+  export GITHUB_EVENT_BEFORE="$before"
+  run "$VALIDATOR"
+  [ "$status" -eq 0 ]
+}
+
 @test "uppercase subject after type fails" {
   local before
   before="$(git rev-parse HEAD)"
