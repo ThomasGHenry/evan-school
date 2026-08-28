@@ -1,4 +1,13 @@
 {
   "name": "web",
-  "tags": ["scope:web"]
+  "tags": ["scope:web"],
+  "targets": {
+    "lint:css": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "stylelint 'apps/web/src/**/*.css' --allow-empty-input",
+        "cwd": "{workspaceRoot}"
+      }
+    }
+  }
 }

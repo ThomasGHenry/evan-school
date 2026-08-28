@@ -9,6 +9,7 @@
     "build": "nx run-many -t build",
     "test": "nx run-many -t test",
     "lint": "nx run-many -t lint",
+    "lint:css": "nx run-many -t lint:css",
     "typecheck": "nx run-many -t typecheck",
     "e2e": "nx run web-e2e:e2e",
     "db:generate": "prisma generate --config packages/db/prisma.config.ts",
@@ -17,23 +18,28 @@
     "db:studio": "prisma studio --config packages/db/prisma.config.ts",
     "postinstall": "bash scripts/setup-hooks.sh || true"
   },
-  "engines": { "node": ">=22" },
+  "engines": {
+    "node": ">=22"
+  },
   "devDependencies": {
-    "nx": "^22.0.0",
-    "@nx/next": "^22.0.0",
-    "@nx/vite": "^22.0.0",
-    "@nx/eslint": "^22.0.0",
-    "@nx/playwright": "^22.0.0",
-    "@nx/eslint-plugin": "^22.0.0",
-    "typescript": "^5.8.0",
     "@commitlint/cli": "^19.0.0",
     "@commitlint/config-conventional": "^19.0.0",
-    "eslint": "^9.0.0",
     "@eslint/js": "^9.0.0",
-    "typescript-eslint": "^8.0.0",
+    "@nx/eslint": "^22.0.0",
+    "@nx/eslint-plugin": "^22.0.0",
+    "@nx/next": "^22.0.0",
+    "@nx/playwright": "^22.0.0",
+    "@nx/vite": "^22.0.0",
+    "eslint": "^9.0.0",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-jsx-a11y": "^6.10.0",
     "eslint-plugin-react": "^7.37.0",
     "eslint-plugin-react-hooks": "^5.0.0",
-    "eslint-plugin-import": "^2.31.0",
-    "eslint-plugin-jsx-a11y": "^6.10.0"
+    "nx": "^22.0.0",
+    "stylelint": "^17.14.1",
+    "stylelint-config-standard": "^40.0.0",
+    "stylelint-order": "^8.1.1",
+    "typescript": "^5.8.0",
+    "typescript-eslint": "^8.0.0"
   }
 }
