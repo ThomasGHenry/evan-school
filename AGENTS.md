@@ -203,6 +203,7 @@ and update all imports before first Layer 2 commit.
 - All `git push` via `env -u GH_TOKEN git push` to avoid stale token interference.
 - Never `--no-verify` on any git command. Hooks are sacred.
 - Conventional commits enforced at `commit-msg` hook and in CI. Header ≤ 72 chars.
+- PR titles must start **lowercase** after the `type:` prefix. `docs: seo strategy` not `docs: SEO Strategy`. GitHub appends ` (#NNN)` on squash-merge (excluded from the 72-char count per ADR 0123), but the case rule applies to the authored title and is not auto-corrected.
 - Node 22 required. Run `fnm use 22` before pnpm commands.
 - pnpm 10+ required. Use `pnpm install --frozen-lockfile` in CI.
 - Every `scripts/ci/*.sh` must ship with a sibling `.bats` file in the same commit.

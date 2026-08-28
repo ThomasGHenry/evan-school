@@ -113,3 +113,16 @@ fixture_commit() {
   [ "$status" -ne 0 ]
   [[ "$output" == *"subject must not start with uppercase"* ]]
 }
+
+@test "squash-merge pr suffix does not count toward header length" {
+  local before base suffix
+  before="$(git rev-parse HEAD)"
+  base="docs: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  suffix=" (#999)"
+  fixture_commit "${base}${suffix}"
+  export GITHUB_EVENT_NAME=push
+  export GITHUB_SHA="$(git rev-parse HEAD)"
+  export GITHUB_EVENT_BEFORE="$before"
+  run "$VALIDATOR"
+  [ "$status" -eq 0 ]
+}
