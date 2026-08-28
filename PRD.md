@@ -174,30 +174,44 @@ Evan (and any future collaborators he designates).
 Access tier shown in brackets: `[P]` Public · `[M]` Mailing List · `[S]` Paid Student · `[A]` Admin
 
 ```
-/                                       [P]  Landing page
-/about                                  [P]  About Evan — biography, background, lineage
-/contact                                [P]  Contact form
-/the-work                               [P]  The work — what 1:1 sessions with Evan involve
-/who-this-is-for                        [P]  Audience fit — who benefits from this work
-/scope-and-safety                       [P]  Scope of practice and safety information
-/ideal-parent-figure-protocol           [P]  Flagship SEO/GEO hub — IPF Protocol explained
-/guides                                 [P]  Guide index (SEO/GEO)
-/guides/[slug]                          [P]  Individual guide article
-/events                                 [P]  Event listings
-/events/[slug]                          [P]  Individual event page
-/resources                              [M]  Protected resource index
-/resources/[slug]                       [M]  Individual protected resource
-/courses                                [P]  Course catalog
-/courses/[slug]                         [P]  Course marketing page
-/courses/[slug]/content                 [S]  Student course content (scoped)
-/dashboard                              [S]  Student dashboard — enrolled courses list
-/checkout                               [P]  Payment + account creation flow
-/account                                [M]  Account settings
-/login                                  [P]  Login
-/signup                                 [P]  Signup (also triggered mid-checkout)
-/reset-password                         [P]  Password reset
+/                                        [P]  Landing page
+/about                                   [P]  About Evan
+/the-work                                [P]  The work — IPF facilitation, 1:1 sessions
+/who-this-is-for                         [P]  Audience fit
+/ideal-parent-figure-protocol            [P]  Flagship SEO/GEO hub — IPF explainer
+/scope-and-safety                        [P]  Scope statement and safety information
+/privacy                                 [P]  Privacy policy
+/contact                                 [P]  Contact
 
-/admin                                  [A]  Payload CMS admin panel
+/guides                                  [P]  Guides index (SEO/GEO content)
+/guides/[slug]                           [P]  Individual guide
+
+/events                                  [P]  Events index
+/ipf-weekend-retreat                     [P]  Event page (top-level, not /events/[slug])
+
+/courses/i-can-relate                    [P]  Course marketing page
+/courses/[slug]/content                  [S]  Course content (paid, per-course scoped)
+
+/resources/introductory-ipf-practice     [P]  Free public resource (no auth gate)
+/resources/[slug]                        [M]  Protected resource (subscriber+)
+
+/dashboard                               [S]  Student dashboard
+/checkout                                [P]  Checkout
+/account                                 [M]  Account settings
+/login                                   [P]  Login
+/signup                                  [P]  Signup
+/reset-password                          [P]  Password reset
+
+/admin                                   [A]  Admin home (Payload admin UI)
+/admin/courses                           [A]  Manage courses
+/admin/guides                            [A]  Manage guides
+/admin/resources                         [A]  Manage resources
+/admin/users                             [A]  User management
+```
+
+**Legacy redirect:**
+```
+/relationship-course-summer-2026  →  /courses/i-can-relate  (308)
 ```
 
 ---
