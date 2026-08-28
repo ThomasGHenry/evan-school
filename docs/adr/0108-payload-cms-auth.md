@@ -69,6 +69,41 @@ handlers.
 **Payload auth uses `payload-token` cookie (HTTP-only JWT).** The frontend never
 handles raw tokens.
 
+**Three-layer authorization model:**
+
+Authorization operates at three distinct layers with different responsibilities:
+
+**Layer 1 — Middleware (edge, no DB access)**
+Coarse authentication gate. Checks `payload-token` cookie presence only.
+Redirects to `/login?redirect=<path>` if absent. Covers routes that are
+*always* fully protected: `/dashboard`, `/account`, `/admin`. Does NOT cover
+`/resources` — resource visibility is mixed (some public, some subscriber-gated)
+and cannot be resolved without a DB query.
+
+**Layer 2 — Server component (DB access via Payload local API)**
+Fine-grained authorization per document. Two cases:
+
+- `/resources/[slug]`: fetch resource via Payload local API. If
+  `resource.isPublic === true`, render for any visitor. If
+  `resource.isPublic === false`, require `req.user.role` of `subscriber` or
+  above — redirect to `/login` if unauthenticated, 403 if authenticated but
+  insufficient role.
+- `/courses/[slug]/content`: require authenticated user with a matching
+  `Enrollment` row (`userId`, `courseId`, `accessGranted: true`). Admin role
+  bypasses enrollment check.
+
+**Layer 3 — Payload access control functions (data layer)**
+Collection-level access functions prevent unauthorized data from being returned
+via Payload's local API regardless of which route initiates the request. This is
+the last line of defense — a missed server-component check cannot produce a data
+leak because Payload's access function on the collection enforces the same logic.
+
+`Resource.read`: returns document if `doc.isPublic === true` OR
+`req.user?.role` is `subscriber | student | admin`.
+
+`CourseContent.read`: returns document if `req.user?.role === 'admin'` OR
+`Enrollment` query matches `{ userId: req.user.id, courseId, accessGranted: true }`.
+
 OAuth (Google) and magic links are Payload plugin features, deferred to
 post-MVP.
 
@@ -82,7 +117,11 @@ post-MVP.
 - `apps/web/payload.config.ts` created with Users, Guides, Courses, Events,
   Resources collections
 - `apps/web/src/middleware.ts`: `clerkMiddleware` replaced with `payload-token`
-  cookie check
+  cookie check covering `/dashboard`, `/account`, `/admin` only — not `/resources`
+- `Resource` collection includes `isPublic: boolean` field (default `false`).
+  Public resources (e.g. `/resources/introductory-ipf-practice`) are marked
+  `isPublic: true` in Payload admin — no code change required when Evan adds
+  new public resources.
 - `apps/web/src/app/layout.tsx`: `<ClerkProvider>` removed
 - Three auth pages to build: `/login`, `/signup`, `/reset-password`
 - Social login (OAuth) is not a config toggle — requires Payload OAuth plugin
