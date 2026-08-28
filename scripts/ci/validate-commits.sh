@@ -77,11 +77,18 @@ is_merge_commit() {
 
 validate_subject() {
   local sha="$1" subject="$2"
+  local canonical
+  canonical="$(strip_pr_suffix "$subject")"
   local failed=0
-  check_type_prefix "$sha" "$subject" || failed=1
-  check_header_length "$sha" "$subject" || failed=1
-  check_subject_case "$sha" "$subject" || failed=1
+  check_type_prefix "$sha" "$canonical" || failed=1
+  check_header_length "$sha" "$canonical" || failed=1
+  check_subject_case "$sha" "$canonical" || failed=1
   return "$failed"
+}
+
+strip_pr_suffix() {
+  local subject="$1"
+  printf '%s' "${subject% (#[0-9]*)}"
 }
 
 CONVENTIONAL_PATTERN='^(feat|fix|chore|docs|test|refactor|perf|ci|build|revert)(\(.+\))?!?: '
