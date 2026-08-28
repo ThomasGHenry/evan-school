@@ -197,6 +197,7 @@ Access tier shown in brackets: `[P]` Public · `[M]` Mailing List · `[S]` Paid 
 
 /dashboard                               [S]  Student dashboard
 /checkout                                [P]  Checkout
+/checkout/success                        [P]  Payment confirmation — NOINDEX
 /account                                 [M]  Account settings
 /login                                   [P]  Login
 /signup                                  [P]  Signup
