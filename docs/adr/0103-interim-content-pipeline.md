@@ -1,8 +1,9 @@
 ---
-status: accepted
+status: superseded
 date: 2026-08-24
 tags: [architecture, content]
 implementation: packages/domain/src/content.ts
+superseded-by: 0108-payload-cms-auth.md
 ---
 
 # 0103. Interim Content Pipeline: gray-matter via Typed Domain Interface

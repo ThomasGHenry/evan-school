@@ -1,8 +1,9 @@
 ---
-status: accepted
+status: superseded
 date: 2026-08-23
 tags: [architecture, tooling]
 implementation: apps/web/src/middleware.ts
+superseded-by: 0108-payload-cms-auth.md
 ---
 
 # 0100. Clerk as Auth Provider

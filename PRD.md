@@ -1,8 +1,8 @@
-# Evan's Meditation School — Product Requirements Document
+# EvanLeed.com — Product Requirements Document
 
-**Version:** 0.1
-**Date:** 22 August 2026
-**Status:** Draft — pre-design, pre-stack-decision
+**Version:** 0.3
+**Date:** 28 August 2026
+**Status:** Draft — stack settled, design complete, pre-build
 **Authors:** Evan (product), Thomas (engineering)
 **Reference aesthetic:** [thefield.us](https://thefield.us)
 
@@ -13,7 +13,7 @@
 1. [Overview](#1-overview)
 2. [Goals & Non-Goals](#2-goals--non-goals)
 3. [User Roles & Access Control](#3-user-roles--access-control)
-4. [Student Journey](#4-student-journey)
+4. [Visitor Journey](#4-visitor-journey)
 5. [Site Map & Page Inventory](#5-site-map--page-inventory)
 6. [Feature Requirements](#6-feature-requirements)
 7. [Content Architecture](#7-content-architecture)
@@ -27,9 +27,9 @@
 
 ## 1. Overview
 
-A new website for Evan's meditation school, replacing the current Squarespace setup. The site serves three jobs simultaneously: inbound discovery (SEO/GEO), audience capture (mailing list), and course delivery (paid student experience). These map directly to top-of-funnel, middle-funnel, and bottom-of-funnel, and will be built in that order of leverage.
+A new website for Evan Leed's IPF facilitation practice, replacing the current Squarespace setup. The site serves three jobs simultaneously: inbound discovery (SEO/GEO), consultation booking (primary conversion), and course delivery (paid student experience). These map directly to top-of-funnel, middle-funnel, and bottom-of-funnel, and will be built in that order of leverage — SEO foundation first, enrollment later.
 
-The current workflow — PayPal payment → manual email → password-protected Squarespace page → Zoom session → Zoom recording — will be automated and made scalable, while keeping the near-term architecture deliberately simple.
+The current workflow — manual payment → manual email → password-protected Squarespace page → Zoom session → Zoom recording — will be automated and made scalable, while keeping the near-term architecture deliberately simple.
 
 ---
 
@@ -37,11 +37,12 @@ The current workflow — PayPal payment → manual email → password-protected 
 
 ### Goals
 
-- **Discoverability.** Rank in Google, appear in AI-generated answers (ChatGPT, Perplexity, etc.), surface in referrals.
-- **Audience capture.** Mailing list growth is the primary conversion goal. The list is the funnel.
+- **Discoverability.** Rank in Google, appear in AI-generated answers (ChatGPT, Perplexity, etc.), surface in referrals. Displace a fraudulent incumbent currently ranking for IPF Protocol content.
+- **Consultation booking.** Free consultation via Calendly is the primary conversion goal. This is the hero CTA on the landing page.
+- **Audience capture.** Mailing list growth is the secondary conversion goal. The list is the nurture funnel.
 - **Course sales.** Self-serve enrollment, payment, and access provisioning — no manual steps for Evan.
 - **Student experience.** A clean, persistent home for course materials before and after each live session.
-- **Admin control.** Evan can manage content without a developer for day-to-day updates.
+- **Admin control.** Evan can manage content without a developer from Phase 1 (Payload CMS admin panel).
 - **Performance.** Static-first rendering for public pages; fast, lightweight, no heavy media on the landing page at MVP.
 
 ### Non-Goals (MVP)
@@ -65,8 +66,9 @@ Anyone arriving from Google, ChatGPT, social, or direct link.
 
 **Can access:**
 - Landing page
-- Blog / free articles
+- Guides / free articles
 - Course marketing pages
+- Event pages
 - Checkout flow (to enroll)
 - Login / signup pages
 
@@ -74,7 +76,7 @@ Anyone arriving from Google, ChatGPT, social, or direct link.
 
 ---
 
-### Tier 1 — Mailing List Member
+### Tier 1 — Mailing List Member (Subscriber)
 
 Subscribed via MailChimp. Has an account (created when they sign up or enroll). Has not necessarily paid.
 
@@ -84,7 +86,7 @@ Subscribed via MailChimp. Has an account (created when they sign up or enroll). 
 
 **Cannot access:** course content, student dashboard (unless also enrolled), admin
 
-> **Design note:** This tier requires authentication — an account — but no payment. The protected content is the incentive to subscribe. Whether this tier is worth the auth complexity is flagged as an open question (see §11).
+> **Decision (2026-08-28):** Subscriber tier is retained. The protected free content at `/resources` is the mailing list incentive — subscribing unlocks it. This is a deliberate conversion mechanism. Account creation friction is accepted.
 
 ---
 
@@ -105,58 +107,64 @@ Has purchased at least one course. Access is scoped per course — buying Course
 Evan (and any future collaborators he designates).
 
 **Can access:** everything, plus:
-- Admin CMS for courses, blog, protected resources
+- Payload CMS admin panel for courses, guides, events, protected resources
 - User management (assign / revoke access, view enrollment status)
 
 ---
 
-## 4. Student Journey
+## 4. Visitor Journey
 
 ```
 1. DISCOVERY
    Google / ChatGPT / referral / social
-   → landing page or blog article or course page
+   → landing page or guide article or course page
 
 2. BROWSE
-   Free blog content, about section, course catalog
+   Free guides, about section, course catalog, event listings
    [ Tier: Anonymous ]
 
-3. SUBSCRIBE  ← Primary CTA on landing page
+3. CONSULT  ← Primary CTA on landing page
+   Book free consultation via Calendly
+   → 30-minute call with Evan
+   [ Tier: Anonymous ]
+
+4. SUBSCRIBE  ← Secondary CTA on landing page
    Mailing list signup
    → MailChimp welcome sequence triggers
+   → Access to protected resources unlocked
    [ Tier: Anonymous → Mailing List ]
 
-4. NURTURE
+5. NURTURE
    MailChimp drip sequences
    Access to protected resources (/resources)
    Course teasers, social proof, scheduling nudges
    [ Tier: Mailing List ]
 
-5. ENROLL  ← Bottom of funnel
+6. ENROLL  ← Bottom of funnel
    Course marketing page → Checkout
-   → Payment (PayPal MVP, Stripe target)
+   → Payment (Stripe)
    → Account auto-created (or linked if existing)
    → Course access provisioned immediately
    → Confirmation email sent
    [ Tier: Mailing List → Paid Student ]
 
-6. PRE-COURSE
+7. PRE-COURSE
    Student dashboard: intro document, "setting the stage" materials
    Available from enrollment date through course end and beyond
    [ Tier: Paid Student ]
 
-7. LIVE COURSE
+8. LIVE COURSE
    Zoom link surfaced in dashboard at scheduled time
    [ Tier: Paid Student ]
 
-8. POST-COURSE
+9. POST-COURSE
    Zoom recording link appears in dashboard (Evan adds manually for MVP)
    All pre-course materials remain accessible
    [ Tier: Paid Student ]
 
-9. RE-ENGAGE
-   MailChimp → next course, community teaser (future)
-   [ Tier: Paid Student ]
+10. RE-ENGAGE
+    MailChimp → next course, community teaser (future)
+    [ Tier: Paid Student ]
 ```
 
 ---
@@ -166,26 +174,45 @@ Evan (and any future collaborators he designates).
 Access tier shown in brackets: `[P]` Public · `[M]` Mailing List · `[S]` Paid Student · `[A]` Admin
 
 ```
-/                                   [P]  Landing page
-/blog                               [P]  Free content / article index
-/blog/[slug]                        [P]  Individual article
-/resources                          [M]  Protected resource index
-/resources/[slug]                   [M]  Individual protected resource
-/courses                            [P]  Course catalog
-/courses/[slug]                     [P]  Course marketing page
-/courses/[slug]/content             [S]  Student course content (scoped)
-/dashboard                          [S]  Student dashboard — enrolled courses list
-/checkout                           [P]  Payment + account creation flow
-/account                            [M]  Account settings
-/login                              [P]  Login
-/signup                             [P]  Signup (also triggered mid-checkout)
-/reset-password                     [P]  Password reset
+/                                        [P]  Landing page
+/about                                   [P]  About Evan
+/the-work                                [P]  The work — IPF facilitation, 1:1 sessions
+/who-this-is-for                         [P]  Audience fit
+/ideal-parent-figure-protocol            [P]  Flagship SEO/GEO hub — IPF explainer
+/scope-and-safety                        [P]  Scope statement and safety information
+/privacy                                 [P]  Privacy policy
+/contact                                 [P]  Contact
 
-/admin                              [A]  Admin home
-/admin/courses                      [A]  Manage courses + content
-/admin/blog                         [A]  Manage blog posts
-/admin/resources                    [A]  Manage protected resources
-/admin/users                        [A]  View students, manage access
+/guides                                  [P]  Guides index (SEO/GEO content)
+/guides/[slug]                           [P]  Individual guide
+
+/events                                  [P]  Events index
+/ipf-weekend-retreat                     [P]  Event page (top-level, not /events/[slug])
+
+/courses/i-can-relate                    [P]  Course marketing page
+/courses/[slug]/content                  [S]  Course content (paid, per-course scoped)
+
+/resources/introductory-ipf-practice     [P]  Free public resource (no auth gate)
+/resources/[slug]                        [M]  Protected resource (subscriber+)
+
+/dashboard                               [S]  Student dashboard
+/checkout                                [P]  Checkout
+/checkout/success                        [P]  Payment confirmation — NOINDEX
+/account                                 [M]  Account settings
+/login                                   [P]  Login
+/signup                                  [P]  Signup
+/reset-password                          [P]  Password reset
+
+/admin                                   [A]  Admin home (Payload admin UI)
+/admin/courses                           [A]  Manage courses
+/admin/guides                            [A]  Manage guides
+/admin/resources                         [A]  Manage resources
+/admin/users                             [A]  User management
+```
+
+**Legacy redirect:**
+```
+/relationship-course-summer-2026  →  /courses/i-can-relate  (308)
 ```
 
 ---
@@ -194,20 +221,21 @@ Access tier shown in brackets: `[P]` Public · `[M]` Mailing List · `[S]` Paid 
 
 ### 6.1 Landing Page (`/`)
 
-- **Single primary CTA:** mailing list email signup. This is the hero action — large, obvious, impossible to miss.
-- Course offerings visible but secondary to the mailing list CTA. Course is not absent; it is not the hero.
-- About / intro section (can be a landing page section rather than a separate `/about` page — TBD in design).
-- No heavy media at MVP. Any media references should resolve lazily (linked thumbnail → player, not autoplay embed). Landing page must stay lightweight for SEO.
-- Contact (TBD: section on landing page or separate page).
+- **Primary CTA:** consultation booking via Calendly link. This is the hero action — large, prominent, above the fold.
+- **Secondary CTA:** mailing list email signup (MailChimp). Present and visible, but not the hero.
+- About / intro section linking to `/about`.
+- Course and event listings visible but secondary.
+- No heavy media at MVP. Landing page must stay lightweight for SEO.
 - Standard footer: links, social, legal.
 
-### 6.2 Blog / Free Content (`/blog`)
+### 6.2 Guides (`/guides`, `/guides/[slug]`)
 
-- SEO and GEO-optimized articles answering common meditation questions.
-- Fully public and crawlable. All standard SEO metadata: title, description, OpenGraph, JSON-LD Article schema, canonical URLs.
+- SEO and GEO-optimized articles answering common IPF and attachment-related questions.
+- Fully public and crawlable. All standard SEO metadata: title, description, OpenGraph, JSON-LD `Article` schema, canonical URLs.
 - Searchable / filterable index page.
-- Individual article pages (`/blog/[slug]`) statically generated at build time.
-- Evan creates and publishes posts via admin CMS (Phase 3). At MVP, content is hardcoded or file-based.
+- Individual guide pages (`/guides/[slug]`) statically generated at build time.
+- Evan creates and publishes guides via Payload CMS admin panel.
+- Publication cadence: 1 guide per week over 11 weeks (not all at launch).
 
 ### 6.3 Protected Resources (`/resources`)
 
@@ -215,14 +243,14 @@ Access tier shown in brackets: `[P]` Public · `[M]` Mailing List · `[S]` Paid 
 - Free content — audio, PDFs, guided meditations, etc. — used as a lead magnet and funnel incentive.
 - Index page shows available resources to authenticated users.
 - Individual resource pages (`/resources/[slug]`) gated behind login check.
-- Evan manages via admin CMS (Phase 3). MVP: hardcoded.
+- Evan manages via Payload CMS admin panel.
 
 ### 6.4 Course Marketing Pages (`/courses`, `/courses/[slug]`)
 
 - Fully public and crawlable.
 - Per-course page: description, Evan's background for this course, schedule/date, price, enroll CTA → checkout.
 - Course catalog page lists all active courses.
-- Statically generated for SEO. Content managed by Evan via admin CMS (Phase 3). MVP: hardcoded.
+- Statically generated for SEO. Content managed by Evan via Payload CMS admin panel.
 
 ### 6.5 Course Content (`/courses/[slug]/content`)
 
@@ -238,7 +266,7 @@ Paid students only, scoped to their enrolled course(s).
 | Recording link | After live session | Evan adds post-session; links to Zoom cloud recording |
 | Meditation links / resources | Ongoing | Supplementary materials |
 
-For MVP, Evan updates content by editing a record in the admin (or directly in the database / CMS). This does not need to be a rich media experience — links are sufficient.
+Evan updates content via Payload CMS admin panel.
 
 ### 6.6 Student Dashboard (`/dashboard`)
 
@@ -251,7 +279,7 @@ For MVP, Evan updates content by editing a record in the admin (or directly in t
 ### 6.7 Checkout & Enrollment (`/checkout`)
 
 - Triggered from course marketing page CTA.
-- Payment: PayPal at MVP, Stripe as target.
+- Payment: Stripe. `payment_intent.succeeded` webhook provisions access.
 - On successful payment:
   - Account created (or existing account linked)
   - Course access row provisioned in DB
@@ -261,16 +289,17 @@ For MVP, Evan updates content by editing a record in the admin (or directly in t
 
 ### 6.8 Auth Pages
 
-- Login, signup, password reset.
+- Login, signup, password reset — custom Next.js pages backed by Payload REST auth endpoints.
 - Signup is triggered both from the mailing list CTA (Tier 1 account) and from checkout (Tier 2 account).
-- Standard flows: email + password. Magic link or OAuth (Google) are nice-to-have, not MVP.
+- Standard flow: email + password. Magic link or OAuth (Google) are nice-to-have, not MVP.
 
 ### 6.9 Admin CMS (`/admin`)
 
-Built in Phase 3. Until then, content is hardcoded or managed directly.
+Payload CMS auto-generated admin panel — available from Phase 1. Evan can manage content without a developer from day one.
 
+**Collections:** Guides, Courses, Events, Resources, Users.
 **Admin/courses:** create/edit course records, attach content sections, set Zoom link + recording URL, publish/unpublish.
-**Admin/blog:** create/edit/publish blog posts, set metadata.
+**Admin/guides:** create/edit/publish guide articles, set metadata.
 **Admin/resources:** create/edit protected content items, attach files or links.
 **Admin/users:** view all users, see enrollment status and mailing list tier, manually assign or revoke course access (for edge cases like refunds or comps).
 
@@ -279,9 +308,11 @@ Built in Phase 3. Until then, content is hardcoded or managed directly.
 ## 7. Content Architecture
 
 ### Public content (no auth)
-- Landing page copy + images
-- Blog articles
+- Landing page copy
+- Guide articles
 - Course marketing copy
+- Event listings
+- `/ideal-parent-figure-protocol` flagship hub
 
 ### Protected content (mailing list tier)
 - Audio recordings, PDFs, guided meditations offered as list incentives
@@ -292,7 +323,7 @@ Built in Phase 3. Until then, content is hardcoded or managed directly.
 - Scoped: student only sees courses they paid for
 
 ### Admin-managed
-- All of the above, editable via CMS (Phase 3)
+- All of the above, editable via Payload CMS admin panel
 - User roster and access assignments
 
 ### MailChimp segments
@@ -306,16 +337,15 @@ Built in Phase 3. Until then, content is hardcoded or managed directly.
 
 | Layer | Choice | Status | Notes |
 |---|---|---|---|
-| Frontend framework | Next.js (App Router) | Settled | SSG for public pages (SEO), SSR for auth routes. No Gatsby needed. |
-| Hosting | Vercel | Settled | Native Next.js integration, edge CDN, CI/CD, good free tier to start. |
-| Database | PostgreSQL (Neon or Railway) | Settled | Relational model for RBAC, students, courses, enrollments. Both have generous free tiers. Audit pricing cliffs before launch. |
-| Authentication | TBD | **Open — blocker** | See §11. Decision required before build starts. |
-| Payments (MVP) | PayPal | Settled | Bridges current manual flow. Webhook fires on payment to provision access. |
-| Payments (target) | Stripe | Phased | Stripe's webhook model (`payment_intent.succeeded`) is cleaner for auto-provisioning. Migrate when PayPal becomes a bottleneck. |
-| Email / CRM | MailChimp (existing) | Settled | Keep existing account. Segment by tier. Abandon cart, drip, upsell sequences. |
-| Analytics | TBD | Open | Plausible ($9/mo, privacy-first, lightweight) is the default recommendation. PostHog if full product analytics are needed. GA4 if budget is the constraint. |
-| SEO / GEO | Next.js metadata API + llms.txt | Settled | Static sitemap, robots.txt, OpenGraph, JSON-LD. `llms.txt` for AI crawler guidance. |
-| CMS (content) | Custom admin UI | Phased | Hardcoded/file-based at MVP. Admin CRUD in Phase 3. |
+| Frontend framework | Next.js (App Router) | Settled | SSG for public pages (SEO), SSR for auth routes. |
+| Hosting | Vercel | Settled | Native Next.js integration, edge CDN, CI/CD. |
+| Database | PostgreSQL (Neon) | Settled | Neon chosen for copy-on-write branching — instant prod-data clone per PR for migration rehearsal. Audit pricing cliff before launch (§11 Q5). |
+| Authentication | Payload CMS | Settled | ADR 0108. Payload Users collection with role field. `payload-token` cookie in middleware. Single source of truth — no Clerk/DB sync. |
+| Payments | Stripe | Settled | ADR 0106. `payment_intent.succeeded` webhook provisions enrollment. No PayPal. |
+| Email / CRM | MailChimp (existing) | Settled | Keep existing account. Segment by tier. Drip and upsell sequences. |
+| Analytics | PostHog + GA4 | Settled | ADR 0119. PostHog: product analytics, session replay, cross-session identity. GA4: search performance, AI referral tracking (`utm_source=chatgpt.com`). |
+| SEO / GEO | Next.js metadata API | Settled | `robots.ts` (generated), `sitemap.ts` (dynamic), OpenGraph, JSON-LD. `llms.txt` not implemented (ADR 0111). |
+| CMS (content) | Payload CMS | Settled | ADR 0108. Auto-generated admin panel available Phase 1. Evan edits without a developer from day one. |
 | Community | Circle.so or custom | Future | Not in MVP. |
 
 ### Database schema (sketch)
@@ -325,8 +355,9 @@ users           id, email, password_hash, role, mailchimp_id, created_at
 courses         id, slug, title, description, zoom_link, recording_url, status, published_at
 course_content  id, course_id, section (enum), content_type, content_url, sort_order
 enrollments     id, user_id, course_id, paid_at, payment_ref, access_granted
-posts           id, slug, title, body, published_at, seo_meta
+guides          id, slug, title, body, direct_answer, published_at, seo_meta
 resources       id, slug, title, content_type, content_url, published_at
+events          id, slug, title, description, starts_at, ends_at, status, published_at
 ```
 
 ---
@@ -335,61 +366,91 @@ resources       id, slug, title, content_type, content_url, published_at
 
 | Service | Purpose | Trigger |
 |---|---|---|
+| Calendly | Free consultation booking | Primary CTA on landing page and `/the-work` |
 | MailChimp | Mailing list, drip sequences, student segments | Signup form → subscribe. Payment success → add to student segment. |
-| PayPal (MVP) | Payment processing | Checkout → IPN webhook → provision enrollment row |
-| Stripe (target) | Payment processing | `payment_intent.succeeded` → provision enrollment row |
+| Stripe | Payment processing | `payment_intent.succeeded` webhook → provision enrollment row |
 | Zoom | Live session delivery + recording | Evan manages externally; URL stored in DB and surfaced to students |
-| Plausible / GA4 | Analytics | Page load (script tag) |
+| PostHog | Product analytics, session replay | Funnel events: consultation click, checkout, course views |
+| GA4 | Search and AI referral measurement | Page views, UTM capture, GSC integration |
 
 ---
 
 ## 10. Build Phases
 
-Ordered by leverage: top + bottom of funnel first (direct revenue impact), then content / middle funnel, then ops / admin, then polish.
+Ordered by SEO foundation first, enrollment later. Phase ordering follows seo.md.
 
-### Phase 1 — Top & Bottom of Funnel
+### Phase 1 — Foundation (SEO + infrastructure)
 
-*Outcome: a stranger can find the site, sign up to the mailing list, enroll in a course, pay, and access their content.*
+*Outcome: site is live, indexed, discoverable, and Evan can manage content.*
 
-- Landing page with mailing list CTA
-- MailChimp signup form integration
-- Course marketing pages (static, SEO-optimized)
-- Checkout + PayPal payment
-- Account creation on purchase + confirmation email
-- Basic student dashboard (hardcoded course content)
-- Auth: login / signup / password reset
-- Course content pages (hardcoded structure)
+- Payload CMS installed: Users collection, auth middleware, admin panel
+- `robots.ts` (generated), `sitemap.ts` (dynamic with `lastModified`)
+- Canonical URL normalization: apex → www 308, no trailing slash (ADR 0109)
+- GA4 + PostHog integrated
+- `BusinessSettings` central config (ADR 0112)
+- JSON-LD: `WebSite` + `Person` entity (`/#evan-leed`) on landing page
+- Landing page with consultation CTA (Calendly) + newsletter signup (secondary)
+- Performance budget CI gate (LCP p75 < 2.5s, JS < 150KB)
 
-### Phase 2 — Content & Middle Funnel
+### Phase 2 — Migration-critical pages (before DNS cutover)
 
-*Outcome: inbound content machine is running; mailing list members have a reason to stay.*
+*Outcome: every legacy Squarespace URL is accounted for; site can safely replace the old one.*
 
-- Blog / free articles (SEO/GEO-optimized, JSON-LD schema)
-- Protected resources section + mailing list auth gating
-- `llms.txt`, `sitemap.xml`, `robots.txt`, structured data
-- Analytics integration (Plausible or GA4)
-- OpenGraph / social sharing metadata
+- Legacy URL inventory + redirect manifest (ADR 0110, issue #50)
+- `/the-work`, `/about`, `/contact`, `/who-this-is-for`, `/scope-and-safety`
+- `/ideal-parent-figure-protocol` (flagship SEO/GEO hub)
+- JSON-LD: `Service`, `ProfilePage`, `ContactPage`, `BreadcrumbList` per page type
+- OG image system (dynamic 1200×630 per page)
+- Security headers: HSTS, nosniff, Referrer-Policy, CSP report-only (ADR 0115)
 
-### Phase 3 — Admin & Operations
+### Phase 3 — Content machine
 
-*Outcome: Evan can manage content without a developer.*
+*Outcome: inbound content engine is running; mailing list members have a reason to stay.*
 
-- Admin CMS for course content (sections, Zoom links, recording URLs)
-- Admin CMS for blog posts
-- Admin CMS for protected resources
-- User management (view roster, assign/revoke access)
-- MailChimp webhook wiring (auto-add to segment on enrollment)
+- `/guides` listing + `/guides/[slug]` detail pages
+- Guide publication cadence: 1/week over 11 weeks (not all at launch)
+- IndexNow integration: CMS publish → immediate index ping (ADR 0114)
+- `/resources` (protected, mailing list auth-gated)
+- Guides JSON-LD: `Article` with `/#evan-leed` author entity
+- MailChimp subscribe form wired to Payload Users collection
 
-### Phase 4 — Polish & Community
+### Phase 4 — Events + courses (public marketing)
 
-*Outcome: richer student experience; community begins.*
+*Outcome: event and course discovery pages are live and indexed.*
 
-- Hosted video / embedded player (replace raw Zoom recording links)
-- Student community / forums (Circle.so integration or custom)
-- Bookmarking, notes, completion tracking within course content
+- `/events`, `/events/[slug]` with event state machine + expiry automation (ADR 0118)
+- `/courses`, `/courses/[slug]` course marketing pages
+- Course JSON-LD: `Course` schema (name, provider, description, price, startDate)
+- `CollectionPage` JSON-LD on `/events` and `/courses`
+
+### Phase 5 — Enrollment + student experience
+
+*Outcome: a stranger can pay for a course and immediately access their content.*
+
+- Checkout (Stripe) + enrollment provisioning via `payment_intent.succeeded` webhook
+- Student dashboard (`/dashboard`)
+- Course content pages (`/courses/[slug]/content`) — Payload access control enforcement
+- Auth pages: `/login`, `/signup`, `/reset-password`
+- MailChimp webhook: enroll → add to student segment
+- Backfill script: seed enrollment records for existing Squarespace-era students
+
+### Phase 6 — Admin operations
+
+*Outcome: Evan manages all content and users without developer involvement.*
+
+- Payload admin: course content CRUD (Zoom links, recording URLs, section ordering)
+- User management via Payload admin (assign/revoke access, view roster)
+- MailChimp segment automation refinement
+
+### Phase 7 — Polish
+
+*Outcome: richer student and community experience.*
+
+- Hosted video / embedded player (replace raw Zoom recording links — Mux or Cloudflare Stream)
+- Student community consideration (Circle.so integration or custom)
+- Progress tracking, bookmarking, completion markers
+- Course gifting, discount codes, promo codes
 - Student profiles
-- Stripe migration (if still on PayPal)
-- Course gifting / comps / discount codes
 
 ---
 
@@ -397,13 +458,13 @@ Ordered by leverage: top + bottom of funnel first (direct revenue impact), then 
 
 | # | Question | Owner | Priority |
 |---|---|---|---|
-| 1 | **Auth library choice** — BetterAuth, Supabase Auth, or Firebase Auth? This decision gates the entire build. BetterAuth = full control, more implementation work. Supabase = batteries included, ties you to their infra. Firebase = hosted, easy, separate ecosystem from Vercel/Postgres. | Thomas | **Blocker** |
-| 2 | **Mailing list auth tier** — Is protected-content-for-subscribers worth the account-creation friction? Could simplify to just two user states: anonymous and paid student. Mailing list incentives could be public content that isn't promoted, rather than auth-gated content. | Evan + Thomas | Phase 1 |
-| 3 | **Analytics choice** — Plausible (paid, lightweight, privacy-first), PostHog (generous free tier, product analytics), or GA4 (free, heavy)? | Thomas | Phase 1 |
-| 4 | **About / Contact** — Separate pages or sections on the landing page? | Evan | Design phase |
-| 5 | **Pricing cliff audit** — Check Neon and Railway free tier limits and the cost at the next tier before launching. | Thomas | Pre-launch |
-| 6 | **PayPal → Stripe migration timing** — When does PayPal become painful enough to warrant switching? Define the trigger (e.g., first 20 students, first manual access-provisioning failure). | Thomas | Phase 1 review |
-| 7 | **Recording hosting long-term** — Zoom cloud recordings expire or have storage limits. When do we migrate to hosted video (Mux, Cloudflare Stream, Vimeo)? | Thomas | Phase 4 |
+| 1 | ~~**Auth library choice**~~ — **Closed.** Payload CMS. ADR 0108. | — | ~~Blocker~~ |
+| 2 | ~~**Mailing list auth tier**~~ — **Closed.** Subscriber tier retained. `/resources` is the mailing list incentive. Account creation friction is accepted. 2026-08-28. | — | ~~Phase 1~~ |
+| 3 | ~~**Analytics choice**~~ — **Closed.** PostHog + GA4. ADR 0119. | — | ~~Phase 1~~ |
+| 4 | ~~**About / Contact**~~ — **Closed.** Separate pages: `/about` and `/contact`. 2026-08-28. | — | ~~Design phase~~ |
+| 5 | **Pricing cliff audit** — Check Neon free tier limits and the cost at the next tier before launching. | Thomas | Pre-launch |
+| 6 | ~~**PayPal → Stripe migration timing**~~ — **Closed.** Stripe from Phase 1. No PayPal. ADR 0106. | — | ~~Phase 1 review~~ |
+| 7 | **Recording hosting long-term** — Zoom cloud recordings expire or have storage limits. When do we migrate to hosted video (Mux, Cloudflare Stream, Vimeo)? | Thomas | Phase 7 |
 
 ---
 
@@ -426,7 +487,6 @@ Ordered by leverage: top + bottom of funnel first (direct revenue impact), then 
 
 ## Next Steps
 
-1. **Resolve auth decision** (§11, Q1) — no code until this is settled.
-2. **Design phase** — wireframes per page type using thefield.us as aesthetic reference. Landing page first.
-3. **Agree on mailing list auth tier** (§11, Q2) — simplest possible RBAC is usually right for MVP.
-4. **Phase 1 build** — landing page + checkout + basic student dashboard.
+1. **Owner decisions** — Evan to confirm Calendly URL, session price, sliding scale, scope statement wording (blocks issue #48 / ADR 0112).
+2. **Phase 1 build** — install Payload CMS, configure Users collection, wire middleware (issue #3).
+3. **Neon pricing audit** (§11 Q5) — confirm free tier headroom before launch.

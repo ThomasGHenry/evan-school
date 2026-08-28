@@ -1,0 +1,26 @@
+{
+  "extends": ["stylelint-config-standard"],
+  "plugins": ["stylelint-order"],
+  "rules": {
+    "color-no-invalid-hex": true,
+    "declaration-property-value-disallowed-list": {
+      "color": ["/^#/", "/^rgb/", "/^hsl/"],
+      "background-color": ["/^#/", "/^rgb/", "/^hsl/"],
+      "background": ["/^#/", "/^rgb/", "/^hsl/"],
+      "border-color": ["/^#/", "/^rgb/", "/^hsl/"],
+      "fill": ["/^#/", "/^rgb/", "/^hsl/"],
+      "stroke": ["/^#/", "/^rgb/", "/^hsl/"]
+    },
+    "order/properties-alphabetical-order": true,
+    "custom-property-pattern": "^ems-[a-z][a-z0-9]*(-[a-z0-9]+)*$"
+  },
+  "overrides": [
+    {
+      "files": ["**/tokens.css", "**/tokens/**/*.css"],
+      "rules": {
+        "declaration-property-value-disallowed-list": null,
+        "custom-property-pattern": null
+      }
+    }
+  ]
+}

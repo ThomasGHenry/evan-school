@@ -1,4 +1,13 @@
 {
   "name": "ui",
-  "tags": ["scope:shared"]
+  "tags": ["scope:shared"],
+  "targets": {
+    "lint:css": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "stylelint 'packages/ui/src/**/*.css' --allow-empty-input",
+        "cwd": "{workspaceRoot}"
+      }
+    }
+  }
 }
