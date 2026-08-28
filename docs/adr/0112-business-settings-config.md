@@ -26,11 +26,18 @@ object. All page components and JSON-LD schemas import from this module. Values
 are never hardcoded in JSX or schema files.
 
 ```ts
+export type RetreatPricing = {
+  sustainingPrice: number
+  standardPrice: number
+  reducedPrice: number
+}
+
 export type BusinessSettings = {
   sessionPrice: number
   sessionDuration: string
   slidingScalePrice: number
   consultationDuration: string
+  retreatPricing: RetreatPricing
   calendlyUrl: string
   contactEmail: string
   scopeStatement: string
@@ -42,6 +49,11 @@ export const businessSettings: BusinessSettings = {
   sessionDuration: '50 minutes',
   slidingScalePrice: 150,
   consultationDuration: '30 minutes',
+  retreatPricing: {
+    sustainingPrice: 249.99,
+    standardPrice: 199.99,
+    reducedPrice: 149.99,
+  },
   calendlyUrl: 'https://calendly.com/evanleed/consultation',
   contactEmail: 'evan@evanleed.com',
   scopeStatement:
@@ -50,9 +62,10 @@ export const businessSettings: BusinessSettings = {
 }
 ```
 
-All values above are placeholders pending owner confirmation (seo.md §102).
-`calendlyUrl`, `sessionPrice`, `slidingScalePrice`, and `scopeStatement` in
-particular must be verified with Evan before the site goes live.
+`retreatPricing` values confirmed from live evanleed.com Squarespace checkout
+(August 2026). All other values are placeholders pending owner confirmation
+(seo.md §102). `calendlyUrl`, `sessionPrice`, `slidingScalePrice`, and
+`scopeStatement` must be verified with Evan before the site goes live.
 
 ## Consequences
 
