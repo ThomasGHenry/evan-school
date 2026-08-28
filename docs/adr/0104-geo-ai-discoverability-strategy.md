@@ -1,76 +1,92 @@
 ---
 status: accepted
-date: 2026-08-24
+date: 2026-08-28
 tags: [seo, geo, content, architecture]
-implementation: apps/web/public/llms.txt
+implementation: apps/web/src/app/robots.ts
 ---
 
 # 0104. GEO / AI Discoverability Strategy
 
 ## Context
 
-PRD §2 lists "Discoverability — rank in Google, appear in AI-generated answers
-(ChatGPT, Perplexity, etc.)" as a primary goal. PRD §8 marks the GEO stack as
-Settled: Next.js metadata API, `llms.txt`, `sitemap.xml`, `robots.txt`,
-OpenGraph, JSON-LD.
+PRD §2 lists discoverability — rank in Google, appear in AI-generated answers
+(ChatGPT, Perplexity, etc.) — as a primary goal. The competitive context is
+specific: the current top LLM result for IPF Protocol and attachment repair
+content is a practitioner with fabricated credentials. Evan is a legitimate,
+trained practitioner with a verified lineage. LLMs weight explicit, first-party
+credential signals. A deliberate GEO strategy can displace a fraudulent incumbent.
 
-The competitive context sharpens this decision: the current #1 result on LLM
-searches for IPF Protocol and attachment repair content (per Evan, issue #39)
-is a practitioner with fabricated credentials. Evan is a legitimate, trained
-practitioner with a verified lineage. LLMs weight explicit, first-party
-credential signals in source documents. A deliberate GEO strategy can displace
-a fraudulent incumbent.
+seo.md (2026-08-28) is the authoritative SEO/GEO/AEO specification for this
+project. This ADR records the architectural decisions derived from it.
 
 Three layers of AI discoverability are in scope:
 
-1. **`llms.txt`** — self-description file for LLM crawlers; not yet standardized
-   but respected by ChatGPT, Perplexity, and others. States who Evan is, what
-   the site contains, and what content is most citable.
-2. **JSON-LD structured data** — machine-readable schema that surfaces in Google
-   rich results and is extracted by LLM crawlers as high-confidence structured
-   facts. `Person`, `Course`, `Article`, `WebSite` schemas.
-3. **Static-first public pages** — all public routes are SSG (Next.js static
-   generation). Crawlers see fully-rendered HTML, not a blank JS shell.
+1. **JSON-LD structured data** — machine-readable schema extracted by LLM
+   crawlers as high-confidence structured facts and surfaced in Google rich
+   results.
+2. **Static-first public pages** — all public routes are SSG. Crawlers see
+   fully-rendered HTML, not a blank JS shell.
+3. **AI crawler permissions (`robots.ts`)** — generated Next.js Metadata Route
+   controlling which bots access which routes.
+
+`llms.txt` is explicitly out of scope. Google clarified in June 2026 that its
+Search systems ignore `llms.txt`. It is not implemented. See ADR 0111.
 
 ## Decision
 
-Implement all three layers as Phase 2 deliverables (issues #40, #41, #42),
-with static-first rendering already enforced by the stack choice (ADR 0003).
+### JSON-LD schema inventory
 
-**`llms.txt` content strategy:**
-- Structured description of Evan's credentials, lineage, and practice area
-- Explicit links to blog index, course catalog, and about section
-- No listing of protected or admin routes
-- Plain prose optimized for LLM extraction, not keyword density
+Schema types per page:
 
-**JSON-LD schemas per page type:**
-- All pages: `WebSite` with `potentialAction: SearchAction`
-- Landing page: `Person` (Evan's name, title, credentials, social links)
-- `/courses/[slug]`: `Course` (name, provider, description, price, startDate)
-- `/blog/[slug]`: `Article` (headline, author, datePublished, dateModified)
-- No schema on auth-gated routes (`/dashboard`, `/admin`, `/resources`)
+| Route | Schemas |
+|---|---|
+| All pages | `WebSite` with `potentialAction: SearchAction` |
+| `/` | `Person` — sitewide entity anchor `@id: https://www.evanleed.com/#evan-leed` |
+| `/about` | `ProfilePage` + `Person` |
+| `/the-work` | `Service` |
+| `/guides` | `CollectionPage` |
+| `/guides/[slug]` | `Article` — author references `/#evan-leed` |
+| `/courses/[slug]` | `Course` (name, provider, description, price, startDate) |
+| All nested pages | `BreadcrumbList` (visible HTML + matching JSON-LD) |
 
-**AI crawler permissions (`robots.txt`):**
-- Allow all AI crawlers by default: `GPTBot`, `ClaudeBot`, `PerplexityBot`,
-  `CCBot`, `anthropic-ai`, `Googlebot`
-- Disallow: `/admin`, `/dashboard`, `/checkout`, `/account`
-- Do not disallow `/blog` or `/courses` — these are the citation targets
+`FAQPage` schema is not implemented — deprecated by Google in May 2026. Semantic
+HTML question/answer structure is used instead.
 
-**Schema content sourcing:**
-- MVP: schema fields populated from gray-matter content pipeline (ADR 0103)
-- Phase 3: same `getPageContent` interface, Prisma replaces file reads —
-  JSON-LD generation code does not change
+No structured data on auth-gated routes (`/dashboard`, `/admin`, `/resources`,
+`/account`).
+
+### AI crawler policy (`src/app/robots.ts`)
+
+Generated via Next.js Metadata Route API, not a static `public/robots.txt`.
+
+Allowed crawlers (all routes not explicitly disallowed): `Googlebot`,
+`OAI-SearchBot`, `GPTBot`, `ClaudeBot`, `PerplexityBot`, `CCBot`,
+`anthropic-ai`.
+
+Disallowed for all crawlers: `/admin`, `/dashboard`, `/checkout`, `/account`,
+`/api`.
+
+CSS, JS, and images are not blocked — crawlers require them for rendering.
+
+### Static-first rendering
+
+All public routes (`/`, `/about`, `/the-work`, `/guides`, `/guides/[slug]`,
+`/courses`, `/courses/[slug]`) are statically generated at build time. Auth-gated
+routes use server-side rendering with Payload token verification.
+
+### Content routes
+
+The public content section is `/guides` and `/guides/[slug]` — not `/blog`. The
+service page is `/the-work` — not `/work` or `/1-1`.
 
 ## Consequences
 
-- `apps/web/public/llms.txt` — static file, ships with build
-- `apps/web/public/robots.txt` — extends issue #30 with AI bot entries
-- `apps/web/src/app/layout.tsx` — `WebSite` schema added to root layout
-- Per-page `generateMetadata()` and JSON-LD `<Script>` in course and blog
-  page components
-- Blog and course content pages must be SSG (enforced by not using
-  `export const dynamic = 'force-dynamic'`)
-- Evan must supply credential copy for `llms.txt` and `Person` schema before
-  Phase 2 ships — this is a content dependency, not a build dependency
-- No third-party GEO service required; all signals are first-party and
-  version-controlled
+- `src/app/robots.ts` is the sole robots policy file — no `public/robots.txt`
+- All JSON-LD implemented as inline `<script type="application/ld+json">` in
+  page `<head>` via Next.js `metadata` or explicit script tags
+- Sitewide `Person` entity `@id` (`/#evan-leed`) must be consistent across all
+  `Article` author references
+- `llms.txt` is not created — see ADR 0111
+- Public content routes use `/guides` slug, not `/blog`
+- ADR 0111 documents the `llms.txt` rejection
+- ADR 0120 documents the full robots policy rationale
