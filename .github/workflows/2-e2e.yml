@@ -34,6 +34,7 @@ jobs:
         run: pnpm exec nx run web-e2e:e2e
         env:
           PLAYWRIGHT_BASE_URL: ${{ steps.vercel-deployment.outputs.deployment-url }}
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
       - uses: actions/upload-artifact@v4
         if: failure()
         with:

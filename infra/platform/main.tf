@@ -110,3 +110,15 @@ resource "github_actions_secret" "gh_auto_merge_app_private_key" {
     prevent_destroy = true
   }
 }
+
+resource "vercel_project_protection_bypass" "ci" {
+  project_id = vercel_project.main.id
+  team_id    = vercel_project.main.team_id
+  note       = "ci pipeline"
+}
+
+resource "github_actions_secret" "vercel_automation_bypass_secret" {
+  repository      = var.repo_name
+  secret_name     = "VERCEL_AUTOMATION_BYPASS_SECRET"
+  plaintext_value = vercel_project_protection_bypass.ci.secret
+}
