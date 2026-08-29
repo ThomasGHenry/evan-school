@@ -48,6 +48,14 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: '22', cache: 'pnpm' }
       - run: pnpm install --frozen-lockfile --ignore-scripts
+      - name: Start deployment record
+        id: deployment
+        uses: bobheadxi/deployments@v1
+        with:
+          step: start
+          token: ${{ secrets.GITHUB_TOKEN }}
+          env: production
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       - name: Run production migration
         run: pnpm exec prisma migrate deploy --config packages/db/prisma.config.ts
         env:
@@ -66,8 +74,12 @@ jobs:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
       - name: Record production deployment
         uses: bobheadxi/deployments@v1
+        if: always()
         with:
           step: finish
           token: ${{ secrets.GITHUB_TOKEN }}
           env: production
           status: ${{ job.status }}
+          deployment_id: ${{ steps.deployment.outputs.deployment_id }}
+          environment_url: https://evanleed.com
+          auto_inactive: true
