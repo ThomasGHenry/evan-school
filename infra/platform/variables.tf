@@ -30,3 +30,15 @@ variable "github_token" {
   type        = string
   sensitive   = true
 }
+
+variable "cf_r2_access_key_id" {
+  description = "Cloudflare R2 account-scoped access key ID (for infra.yml Tofu state backend)"
+  type        = string
+  sensitive   = true
+}
+
+variable "cf_r2_secret_access_key" {
+  description = "Cloudflare R2 account-scoped secret access key (for infra.yml Tofu state backend)"
+  type        = string
+  sensitive   = true
+}
