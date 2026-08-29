@@ -94,3 +94,19 @@ resource "github_actions_secret" "cf_r2_secret_access_key" {
   secret_name     = "CF_R2_SECRET_ACCESS_KEY"
   plaintext_value = var.cf_r2_secret_access_key
 }
+
+resource "github_actions_variable" "gh_auto_merge_app_id" {
+  repository    = var.repo_name
+  variable_name = "GH_AUTO_MERGE_APP_ID"
+  value         = var.gh_auto_merge_app_id
+}
+
+resource "github_actions_secret" "gh_auto_merge_app_private_key" {
+  repository      = var.repo_name
+  secret_name     = "GH_AUTO_MERGE_APP_PRIVATE_KEY"
+  plaintext_value = var.gh_auto_merge_app_private_key
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}
