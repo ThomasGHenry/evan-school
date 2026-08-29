@@ -82,3 +82,15 @@ resource "github_actions_variable" "vercel_project_id" {
   variable_name = "VERCEL_PROJECT_ID"
   value         = vercel_project.main.id
 }
+
+resource "github_actions_secret" "cf_r2_access_key_id" {
+  repository      = var.repo_name
+  secret_name     = "CF_R2_ACCESS_KEY_ID"
+  plaintext_value = var.cf_r2_access_key_id
+}
+
+resource "github_actions_secret" "cf_r2_secret_access_key" {
+  repository      = var.repo_name
+  secret_name     = "CF_R2_SECRET_ACCESS_KEY"
+  plaintext_value = var.cf_r2_secret_access_key
+}
