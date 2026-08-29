@@ -42,3 +42,14 @@ variable "cf_r2_secret_access_key" {
   type        = string
   sensitive   = true
 }
+
+variable "gh_auto_merge_app_id" {
+  description = "GitHub App ID for blm-auto-merge (used by auto-merge.yml and infra.yml)"
+  type        = string
+}
+
+variable "gh_auto_merge_app_private_key" {
+  description = "GitHub App RSA private key (PEM) for blm-auto-merge"
+  type        = string
+  sensitive   = true
+}
