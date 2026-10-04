@@ -159,3 +159,11 @@ plant_file() {
   [ "$status" -eq 1 ]
   [[ "$output" == *"trustPolicy"* ]]
 }
+
+@test "missing blockExoticSubdeps true fails" {
+  git init -q .
+  printf 'minimumReleaseAge: 10080\ntrustPolicy: no-downgrade\n' > pnpm-workspace.yaml
+  run "$CHECK"
+  [ "$status" -eq 1 ]
+  [[ "$output" == *"blockExoticSubdeps"* ]]
+}

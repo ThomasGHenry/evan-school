@@ -42,6 +42,7 @@ check_install_policy() {
   [ -f "$workspace" ] || return 0
   _require_release_cooldown "$workspace"
   _require_setting "$workspace" trustPolicy no-downgrade
+  _require_setting "$workspace" blockExoticSubdeps true
 }
 
 _reject_if_present() {
