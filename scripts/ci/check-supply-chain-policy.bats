@@ -127,3 +127,11 @@ plant_file() {
   run "$CHECK"
   [ "$status" -eq 0 ]
 }
+
+@test "pnpm-workspace.yaml without minimumReleaseAge fails naming the key" {
+  git init -q .
+  printf 'packages:\n  - apps/*\n' > pnpm-workspace.yaml
+  run "$CHECK"
+  [ "$status" -eq 1 ]
+  [[ "$output" == *"minimumReleaseAge"* ]]
+}

@@ -17,6 +17,7 @@ main() {
   REPO_ROOT="$(git rev-parse --show-toplevel)"
   check_no_bot_config
   check_no_renovate_package_key
+  check_install_policy
   report_violations
 }
 
@@ -34,12 +35,22 @@ check_no_renovate_package_key() {
   add_violation "package.json: top-level 'renovate' key is forbidden"
 }
 
+check_install_policy() {
+  local workspace="$REPO_ROOT/pnpm-workspace.yaml"
+  [ -f "$workspace" ] || return 0
+  [ -n "$(_yaml_top_level_value "$workspace" minimumReleaseAge)" ] || add_violation "pnpm-workspace.yaml: top-level 'minimumReleaseAge' is required"
+}
+
 _reject_if_present() {
   [ ! -e "$REPO_ROOT/$1" ] || add_violation "$1: automated dependency-update bot config is forbidden"
 }
 
 _json_has_top_level_key() {
   python3 -c 'import json,sys; sys.exit(0 if sys.argv[2] in json.load(open(sys.argv[1])) else 1)' "$1" "$2"
+}
+
+_yaml_top_level_value() {
+  python3 -c 'import sys,yaml; d=yaml.safe_load(open(sys.argv[1])) or {}; v=d.get(sys.argv[2]); print("" if v is None else str(v).lower() if isinstance(v,bool) else v)' "$1" "$2"
 }
 
 main "$@"
