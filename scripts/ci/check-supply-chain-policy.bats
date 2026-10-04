@@ -239,3 +239,10 @@ write_workflow() {
   run "$CHECK"
   [ "$status" -eq 0 ]
 }
+
+@test "local action reference passes" {
+  git init -q .
+  write_workflow ./.github/workflows/auto-triage.yml
+  run "$CHECK"
+  [ "$status" -eq 0 ]
+}

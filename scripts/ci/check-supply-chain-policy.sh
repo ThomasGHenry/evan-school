@@ -117,6 +117,7 @@ _version_at_least() {
 }
 
 _ref_is_pinned() {
+  [[ "$1" == ./* ]] && return 0
   [[ "$1" =~ ^[^@[:space:]]+@[0-9a-f]{40}$ ]]
 }
 
