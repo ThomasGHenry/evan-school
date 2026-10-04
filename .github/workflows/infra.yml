@@ -20,15 +20,15 @@ jobs:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/create-github-app-token@v1
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/create-github-app-token@d72941d797fd3113feb6b93fd0dec494b13a2547
         id: app-token
         with:
           app-id: ${{ vars.GH_AUTO_MERGE_APP_ID }}
           private-key: ${{ secrets.GH_AUTO_MERGE_APP_PRIVATE_KEY }}
           permission-contents: read
           permission-administration: read
-      - uses: opentofu/setup-opentofu@v1
+      - uses: opentofu/setup-opentofu@9d84900f3238fab8cd84ce47d658d25dd008be2f
         with: { tofu_version: '1.9.0' }
       - run: tofu init
         working-directory: infra/github
@@ -59,15 +59,15 @@ jobs:
     if: github.event_name == 'push'
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/create-github-app-token@v1
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/create-github-app-token@d72941d797fd3113feb6b93fd0dec494b13a2547
         id: app-token
         with:
           app-id: ${{ vars.GH_AUTO_MERGE_APP_ID }}
           private-key: ${{ secrets.GH_AUTO_MERGE_APP_PRIVATE_KEY }}
           permission-contents: read
           permission-administration: write
-      - uses: opentofu/setup-opentofu@v1
+      - uses: opentofu/setup-opentofu@9d84900f3238fab8cd84ce47d658d25dd008be2f
         with: { tofu_version: '1.9.0' }
       - run: tofu init
         working-directory: infra/github

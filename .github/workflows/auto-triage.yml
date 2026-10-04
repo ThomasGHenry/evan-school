@@ -24,7 +24,7 @@ jobs:
   triage:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
       - name: Create or update failure issue
         run: bash .github/scripts/auto-triage/create-issue.sh
         env:

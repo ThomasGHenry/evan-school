@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Record incident start
-        uses: bobheadxi/deployments@v1
+        uses: bobheadxi/deployments@648679e8e4915b27893bd7dbc35cb504dc915bc8
         with:
           step: start
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -35,7 +35,7 @@ jobs:
           MTTR_MINUTES=$((MTTR_SECONDS / 60))
           echo "MTTR: ${MTTR_MINUTES} minutes (${MTTR_SECONDS} seconds)"
       - name: Record incident resolution
-        uses: bobheadxi/deployments@v1
+        uses: bobheadxi/deployments@648679e8e4915b27893bd7dbc35cb504dc915bc8
         with:
           step: finish
           token: ${{ secrets.GITHUB_TOKEN }}
