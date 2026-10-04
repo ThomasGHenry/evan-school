@@ -1,5 +1,5 @@
 ---
-status: proposed
+status: superseded
 date: 2026-08-28
 tags: [architecture, auth, seo]
 implementation: apps/web/src/app/resources/page.tsx
