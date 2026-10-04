@@ -20,6 +20,7 @@ main() {
   REPO_ROOT="$(git rev-parse --show-toplevel)"
   check_bot_config_absent
   check_pnpm_policy
+  check_action_pins
   report_violations
 }
 
@@ -68,6 +69,13 @@ check_npmrc_settings() {
   ! grep -q 'shamefully-hoist' "$npmrc" || add_violation ".npmrc: 'shamefully-hoist' belongs in pnpm-workspace.yaml as 'shamefullyHoist'"
 }
 
+check_action_pins() {
+  local finding
+  while IFS= read -r finding; do
+    add_violation "$finding: remote action must be pinned to a full commit SHA"
+  done < <(_list_action_refs)
+}
+
 _reject_if_present() {
   [ ! -e "$REPO_ROOT/$1" ] || add_violation "$1: automated dependency-update bot config is forbidden"
 }
@@ -106,6 +114,10 @@ _pnpm_version_of() {
 _version_at_least() {
   [ -n "$1" ] || return 1
   [ "$(printf '%s\n%s\n' "$2" "$1" | sort -V | head -1)" = "$2" ]
+}
+
+_list_action_refs() {
+  ( cd "$REPO_ROOT" && grep -HnE '^[[:space:]-]*uses:' .github/workflows/*.y*ml 2>/dev/null || true ) | sed -E 's/^([^:]+:[0-9]+):[[:space:]-]*uses:[[:space:]]*/\1 /'
 }
 
 _yaml_top_level_value() {

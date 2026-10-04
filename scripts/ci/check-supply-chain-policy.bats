@@ -219,3 +219,16 @@ write_package_manager() {
   [ "$status" -eq 1 ]
   [[ "$output" == *"shamefullyHoist"* ]]
 }
+
+write_workflow() {
+  mkdir -p .github/workflows
+  printf 'on: push\njobs:\n  a:\n    runs-on: ubuntu-24.04\n    steps:\n      - uses: %s\n' "$1" > .github/workflows/ci.yml
+}
+
+@test "workflow action pinned to a tag fails naming file, line and ref" {
+  git init -q .
+  write_workflow actions/checkout@v4
+  run "$CHECK"
+  [ "$status" -eq 1 ]
+  [[ "$output" == *".github/workflows/ci.yml:6"*"actions/checkout@v4"* ]]
+}
