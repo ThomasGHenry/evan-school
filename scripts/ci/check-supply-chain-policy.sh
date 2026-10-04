@@ -70,9 +70,9 @@ check_npmrc_settings() {
 }
 
 check_action_pins() {
-  local finding
-  while IFS= read -r finding; do
-    add_violation "$finding: remote action must be pinned to a full commit SHA"
+  local location ref
+  while read -r location ref; do
+    _ref_is_pinned "$ref" || add_violation "$location $ref: remote action must be pinned to a full commit SHA"
   done < <(_list_action_refs)
 }
 
@@ -114,6 +114,10 @@ _pnpm_version_of() {
 _version_at_least() {
   [ -n "$1" ] || return 1
   [ "$(printf '%s\n%s\n' "$2" "$1" | sort -V | head -1)" = "$2" ]
+}
+
+_ref_is_pinned() {
+  [[ "$1" =~ ^[^@[:space:]]+@[0-9a-f]{40}$ ]]
 }
 
 _list_action_refs() {

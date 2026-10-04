@@ -232,3 +232,10 @@ write_workflow() {
   [ "$status" -eq 1 ]
   [[ "$output" == *".github/workflows/ci.yml:6"*"actions/checkout@v4"* ]]
 }
+
+@test "workflow action pinned to a full sha passes" {
+  git init -q .
+  write_workflow actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955
+  run "$CHECK"
+  [ "$status" -eq 0 ]
+}
