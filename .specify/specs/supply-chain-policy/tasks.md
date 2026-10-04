@@ -51,15 +51,15 @@ Delivery: one issue → one branch → one PR ("Closes #N"), merged before the n
 
 ## Slice S3 — SHA-pinned actions (#68)
 
-- [ ] T029 RED: B test "workflow with actions/checkout@v4 fails naming file:line and ref". GREEN: `check_action_pins`.
-- [ ] T030 RED: B test "uses pinned to 40-hex sha passes".
-- [ ] T031 RED: B test "local ./ action passes".
-- [ ] T032 RED: B test "short 7-hex sha fails".
-- [ ] T033 RED: B test "sha followed by trailing text fails" (no-comments rule).
-- [ ] T034 RED: B test "composite action.yml under .github/actions is scanned".
-- [ ] T035 GREEN + REFACTOR after each of T030-T034; run B.
-- [ ] T036 RED (real repo): S exits 1 listing every tag-pinned `uses:`.
-- [ ] T037 GREEN (real repo): resolve each tag with `env -u GH_TOKEN gh api repos/OWNER/REPO/git/ref/tags/TAG`, dereferencing annotated tags to the commit; rewrite as `owner/repo@<sha>`; record the tag→SHA map in the PR body. S exits 0; `run-actionlint.sh` passes.
+- [x] T029 RED: B test "workflow with actions/checkout@v4 fails naming file:line and ref". GREEN: `check_action_pins`.
+- [x] T030 RED: B test "uses pinned to 40-hex sha passes".
+- [x] T031 RED: B test "local ./ action passes".
+- [x] T032 RED: B test "short 7-hex sha fails". Observed GREEN on first run; kept as guard.
+- [x] T033 RED: B test "sha followed by trailing text fails" (no-comments rule). Observed GREEN on first run; kept as guard.
+- [x] T034 RED: B test "composite action.yml under .github/actions is scanned".
+- [x] T035 GREEN + REFACTOR after each of T030-T034; run B.
+- [x] T036 RED (real repo): S exits 1 listing every tag-pinned `uses:`.
+- [x] T037 GREEN (real repo): resolve each tag with `env -u GH_TOKEN gh api repos/OWNER/REPO/git/ref/tags/TAG`, dereferencing annotated tags to the commit; rewrite as `owner/repo@<sha>`; record the tag→SHA map in the PR body. S exits 0; `run-actionlint.sh` passes.
 
 ## Slice S4 — pnpm audit gate (#69)
 

@@ -219,3 +219,53 @@ write_package_manager() {
   [ "$status" -eq 1 ]
   [[ "$output" == *"shamefullyHoist"* ]]
 }
+
+write_workflow() {
+  mkdir -p .github/workflows
+  printf 'on: push\njobs:\n  a:\n    runs-on: ubuntu-24.04\n    steps:\n      - uses: %s\n' "$1" > .github/workflows/ci.yml
+}
+
+@test "workflow action pinned to a tag fails naming file, line and ref" {
+  git init -q .
+  write_workflow actions/checkout@v4
+  run "$CHECK"
+  [ "$status" -eq 1 ]
+  [[ "$output" == *".github/workflows/ci.yml:6"*"actions/checkout@v4"* ]]
+}
+
+@test "workflow action pinned to a full sha passes" {
+  git init -q .
+  write_workflow actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955
+  run "$CHECK"
+  [ "$status" -eq 0 ]
+}
+
+@test "local action reference passes" {
+  git init -q .
+  write_workflow ./.github/workflows/auto-triage.yml
+  run "$CHECK"
+  [ "$status" -eq 0 ]
+}
+
+@test "workflow action pinned to a short sha fails" {
+  git init -q .
+  write_workflow actions/checkout@08eba0b
+  run "$CHECK"
+  [ "$status" -eq 1 ]
+}
+
+@test "full sha followed by trailing text fails" {
+  git init -q .
+  write_workflow 'actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.1'
+  run "$CHECK"
+  [ "$status" -eq 1 ]
+}
+
+@test "composite action under .github/actions is scanned" {
+  git init -q .
+  mkdir -p .github/actions/setup
+  printf 'runs:\n  using: composite\n  steps:\n    - uses: actions/setup-node@v4\n' > .github/actions/setup/action.yml
+  run "$CHECK"
+  [ "$status" -eq 1 ]
+  [[ "$output" == *".github/actions/setup/action.yml:4"* ]]
+}
