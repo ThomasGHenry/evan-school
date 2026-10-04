@@ -30,7 +30,7 @@
 | Deployment | Vercel | GitHub App integration |
 | IaC | OpenTofu | >= 1.6 |
 | Node | 22 (`.nvmrc`) | LTS |
-| Package manager | pnpm workspaces (`pnpm-workspace.yaml`) | lockfile committed |
+| Package manager | pnpm workspaces (`pnpm-workspace.yaml`) | 10.34.5 (`packageManager`); lockfile committed; 7-day `minimumReleaseAge` |
 
 ---
 
@@ -55,7 +55,7 @@ The governance layer is the primary value of this template, not the framework sc
 - Merge commits are skipped by validation
 
 ### CI Gate Architecture
-- **Phase 0** (governance, all parallel): `gitleaks`, `actionlint`, `validate-adrs`, `validate-commits`, `shellcheck`, `prisma-migrate-check`
+- **Phase 0** (governance, all parallel): `gitleaks`, `actionlint`, `validate-adrs`, `validate-commits`, `shellcheck`, `supply-chain-policy`, `pnpm-audit`, `prisma-migrate-check`
 - **Phase 1** (compute, all parallel, blocked by Phase 0): `typecheck`, `lint`, `test`, `build`
 - **Aggregate**: `commit-validation` job reads `$NEEDS_JSON`, fails if any required job did not succeed
 - `commit-validation` is the **sole required GitHub status check** in branch protection
@@ -139,8 +139,8 @@ Do not revisit during implementation. These are closed decisions.
 12. **ADRs use 4-digit numbering** — `0001-kebab-slug.md`, not date-based
 13. **Accepted tooling ADRs require `implementation:` field** — links to where it lives
 14. **`validate-aggregate.sh` reads `$NEEDS_JSON`** — same pattern as buen-vecino
-15. **Renovate weekday-only** — prevents weekend PR pile-up
-16. **Major dependency updates get `needs-adr-review` label** — not auto-merged
+15. **No automated dependency-update bots; updates are deliberate with a >= 7-day release cooldown** — see ADR 0124
+16. **Major dependency upgrades are human-initiated and get the `needs-adr-review` label** — never auto-merged
 
 ---
 

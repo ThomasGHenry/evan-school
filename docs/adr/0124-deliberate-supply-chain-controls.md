@@ -1,7 +1,8 @@
 ---
-status: proposed
+status: accepted
 date: 2026-10-04
 tags: [tooling, ci, dependencies, security]
+implementation: scripts/ci/check-supply-chain-policy.sh
 ---
 
 # 0124. Replace automated dependency updates with deliberate supply-chain controls
@@ -113,3 +114,32 @@ With the policy check and audit gate in place, no Renovate or Dependabot configu
 no sub-7-day package version, and no tag-pinned remote action can reach `main`. Confirmed
 when `commit-validation` fails on a PR that reintroduces any of them, and passes on
 `main` after implementation.
+
+## Findings
+
+Implemented 2026-10-04 through PRs merged to `main` in sequence:
+
+- #72 (`d3edfd7`, #71): `next` 15.5.20 → 15.5.24; `pnpm audit --prod --audit-level=critical`
+  exit 1 (2 critical) → exit 0.
+- #73 (`cfc2334`): this ADR, spec, plan, tasks.
+- #74 (`cc380da`, #66): Renovate removed; `check-supply-chain-policy.sh` Phase 0 job.
+- #75 (`0d6252e`, #67): pnpm 10.11.0 → 10.34.5; top-level `minimumReleaseAge: 10080`,
+  `trustPolicy: no-downgrade`, `blockExoticSubdeps: true`, `shamefullyHoist: true`;
+  `.npmrc` removed. Root `node_modules` entry count unchanged (871) after a fresh install.
+- #76 (`ae75e9f`, #68): 49 `uses:` references across 7 workflows pinned to commit SHAs
+  (11 distinct actions).
+- #77 (`4791c7b`, #69): in-range updates of `fast-uri`, `browserslist`, `nanoid`, `sharp`;
+  four advisories ignored (table above); `pnpm-audit` Phase 0 job.
+
+Audit counts, production dependencies: 2 critical / 20 high (`1c9ef82`) → 0 critical /
+4 high, all four ignored (`4791c7b`). All dependencies, high: 59 → 43 (non-blocking).
+
+Hypothesis status: the policy check fails on each forbidden shape in its BATS suite
+(31 tests) and passes on `main`; `commit-validation` succeeded on every PR above. A PR
+that reintroduces a violation has not yet been observed in CI.
+
+Not covered: `trustPolicy` and `minimumReleaseAge` are evaluated only during resolution;
+`pnpm install --frozen-lockfile` skips resolution, so they bind at deliberate
+`pnpm update`/`add`. Observed in #77: resolution locked `browserslist@4.29.1`
+(2026-09-24) while `4.29.2` (2026-09-28) and `4.29.3` (2026-09-29) existed, both younger
+than 10080 minutes. Dependabot security alerts remain follow-up #70.

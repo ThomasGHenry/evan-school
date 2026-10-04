@@ -17,7 +17,7 @@ All labels are created by `infra/github/main.tf`. Do not create labels manually 
 | `in-progress` | `#0e8a16` | Active work | Status |
 | `acceptance-failure` | `#b60205` | CI failure (auto-created by auto-triage.yml) | Auto |
 | `incident` | `#b60205` | Production incident (DORA CFR/MTTR tracking) | Manual |
-| `needs-adr-review` | `#b60205` | Major dependency update (applied by Renovate) | Auto (Renovate) |
+| `needs-adr-review` | `#b60205` | Major dependency update (human-initiated, ADR 0124) | Manual |
 | `backlog` | `#c5def5` | Not prioritized soon | Timeline |
 | `candidate-for-removal` | `#e4e669` | Evaluate for deletion | Optional |
 | `good-first-issue` | `#7057ff` | Suitable for new contributors | Optional |
