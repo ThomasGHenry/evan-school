@@ -17,20 +17,20 @@ Delivery: one issue → one branch → one PR ("Closes #N"), merged before the n
 
 ## Slice S1 — remove Renovate, guard against bot config (#66)
 
-- [ ] T001 RED: B test "outside a git repository dies with message". Fails: S does not exist.
-- [ ] T002 GREEN: S skeleton with `SCRIPT_DIR`/`common.sh`, `main`, `require_inside_git_repo`. Same commit adds B (bats-coverage stays green).
-- [ ] T003 RED: B test "clean repository passes" (empty repo, exit 0).
-- [ ] T004 GREEN: `main` calls `report_violations`.
-- [ ] T005 RED: B test "renovate.json present fails naming the file".
-- [ ] T006 GREEN: `check_no_bot_config` with hardcoded `renovate.json`.
-- [ ] T007 RED: B tests for each remaining name in plan D1 R1 (`.github/renovate.json`, `.renovaterc`, `.github/dependabot.yml`, ...), one `@test` per name.
-- [ ] T008 GREEN + REFACTOR: list of forbidden paths; one loop; `add_violation`.
-- [ ] T009 RED: B test "package.json with top-level renovate key fails".
-- [ ] T010 GREEN: `python3` json read in `check_no_renovate_package_key`.
-- [ ] T011 RED (real repo): S in the repo exits 1 naming `renovate.json`.
-- [ ] T012 GREEN (real repo): delete `renovate.json`, `.github/workflows/renovate.yml`, `scripts/ci/check-renovate-token.sh`, `scripts/ci/check-renovate-token.bats`. S exits 0. Run `validate-bats-coverage.sh`, `run-shellcheck.sh`.
-- [ ] T013 Wire: `supply-chain-policy` Phase 0 job in `.github/workflows/1-commit.yml`; add to the four Phase 1 `needs:` arrays and `commit-validation` `needs:`. Run `run-actionlint.sh`.
-- [ ] T014 Docs: remove Renovate setup from `docs/BOOTSTRAP.md`, `docs/github/secrets.md`; `CLAUDE.md` Bootstrap step 4 and Phase 0 job list.
+- [x] T001 RED: B test "outside a git repository dies with message". Fails: S does not exist.
+- [x] T002 GREEN: S skeleton with `SCRIPT_DIR`/`common.sh`, `main`, `require_inside_git_repo`. Same commit adds B (bats-coverage stays green).
+- [x] T003 RED: B test "clean repository passes" (empty repo, exit 0). Observed GREEN immediately against the skeleton; kept as a guard.
+- [x] T004 GREEN: `main` calls `report_violations`.
+- [x] T005 RED: B test "renovate.json present fails naming the file".
+- [x] T006 GREEN: `check_no_bot_config` with hardcoded `renovate.json`.
+- [x] T007 RED: B tests for each remaining name in plan D1 R1 (`.github/renovate.json`, `.renovaterc`, `.github/dependabot.yml`, ...), one `@test` per name.
+- [x] T008 GREEN + REFACTOR: list of forbidden paths; one loop; `add_violation`.
+- [x] T009 RED: B test "package.json with top-level renovate key fails".
+- [x] T010 GREEN: `python3` json read in `check_no_renovate_package_key`.
+- [x] T011 RED (real repo): S in the repo exits 1 naming `renovate.json`.
+- [x] T012 GREEN (real repo): delete `renovate.json`, `.github/workflows/renovate.yml`, `scripts/ci/check-renovate-token.sh`, `scripts/ci/check-renovate-token.bats`. S exits 0. Run `validate-bats-coverage.sh`, `run-shellcheck.sh`.
+- [x] T013 Wire: `supply-chain-policy` Phase 0 job in `.github/workflows/1-commit.yml`; add to the four Phase 1 `needs:` arrays and `commit-validation` `needs:`. Run `run-actionlint.sh`.
+- [x] T014 Docs: remove Renovate setup from `docs/BOOTSTRAP.md`, `docs/github/secrets.md`; `CLAUDE.md` Bootstrap step 4 and Phase 0 job list.
 
 ## Slice S2 — pnpm install policy (#67)
 

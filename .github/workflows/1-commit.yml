@@ -106,6 +106,13 @@ jobs:
       - uses: actions/checkout@v4
       - run: bash scripts/ci/validate-speckit.sh
 
+  supply-chain-policy:
+    name: Supply-Chain Policy
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - run: bash scripts/ci/check-supply-chain-policy.sh
+
   prisma-migrate-check:
     name: Prisma Schema Validity
     runs-on: ubuntu-24.04
@@ -139,7 +146,7 @@ jobs:
 
   typecheck:
     name: Type Check
-    needs: [gitleaks, actionlint, validate-adrs, validate-commits, shellcheck, validate-bats-coverage, validate-speckit, prisma-migrate-check, changes]
+    needs: [gitleaks, actionlint, validate-adrs, validate-commits, shellcheck, validate-bats-coverage, validate-speckit, supply-chain-policy, prisma-migrate-check, changes]
     if: needs.changes.outputs.web == 'true' || needs.changes.outputs.packages == 'true' || github.event_name == 'push'
     runs-on: ubuntu-24.04
     steps:
@@ -155,7 +162,7 @@ jobs:
 
   lint:
     name: Lint
-    needs: [gitleaks, actionlint, validate-adrs, validate-commits, shellcheck, validate-bats-coverage, validate-speckit, prisma-migrate-check, changes]
+    needs: [gitleaks, actionlint, validate-adrs, validate-commits, shellcheck, validate-bats-coverage, validate-speckit, supply-chain-policy, prisma-migrate-check, changes]
     if: needs.changes.outputs.web == 'true' || needs.changes.outputs.packages == 'true' || github.event_name == 'push'
     runs-on: ubuntu-24.04
     steps:
@@ -171,7 +178,7 @@ jobs:
 
   test:
     name: Test
-    needs: [gitleaks, actionlint, validate-adrs, validate-commits, shellcheck, validate-bats-coverage, validate-speckit, prisma-migrate-check, changes]
+    needs: [gitleaks, actionlint, validate-adrs, validate-commits, shellcheck, validate-bats-coverage, validate-speckit, supply-chain-policy, prisma-migrate-check, changes]
     if: needs.changes.outputs.web == 'true' || needs.changes.outputs.packages == 'true' || github.event_name == 'push'
     runs-on: ubuntu-24.04
     steps:
@@ -187,7 +194,7 @@ jobs:
 
   build:
     name: Build
-    needs: [gitleaks, actionlint, validate-adrs, validate-commits, shellcheck, validate-bats-coverage, validate-speckit, prisma-migrate-check, changes]
+    needs: [gitleaks, actionlint, validate-adrs, validate-commits, shellcheck, validate-bats-coverage, validate-speckit, supply-chain-policy, prisma-migrate-check, changes]
     if: needs.changes.outputs.web == 'true' || needs.changes.outputs.packages == 'true' || github.event_name == 'push'
     runs-on: ubuntu-24.04
     steps:
@@ -229,7 +236,7 @@ jobs:
 
   commit-validation:
     name: Commit Validation
-    needs: [gitleaks, actionlint, validate-adrs, validate-commits, shellcheck, validate-bats-coverage, validate-speckit, prisma-migrate-check, changes, typecheck, lint, test, build, coverage-gate]
+    needs: [gitleaks, actionlint, validate-adrs, validate-commits, shellcheck, validate-bats-coverage, validate-speckit, supply-chain-policy, prisma-migrate-check, changes, typecheck, lint, test, build, coverage-gate]
     runs-on: ubuntu-24.04
     if: always()
     steps:

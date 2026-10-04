@@ -171,24 +171,6 @@ vercel env add DATABASE_URL production
 - [x] Labels: standard governance set + 8 epic labels
 - [x] Secrets: `VERCEL_TOKEN`, `DATABASE_URL_PROD`, `CF_R2_ACCESS_KEY_ID`, `CF_R2_SECRET_ACCESS_KEY`
 - [x] Variable: `VERCEL_PROJECT_ID`
-- [ ] **`RENOVATE_TOKEN`** — needed for Renovate dependency PRs
-
-### 5a. Create RENOVATE_TOKEN
-
-Renovate auto-creates PRs when dependencies have updates. It needs a PAT to push those PRs.
-
-1. Go to https://github.com/settings/tokens?type=beta (fine-grained PATs)
-2. **Generate new token**
-   - Resource owner: `ThomasGHenry`
-   - Repository access: **Only selected repositories** → `evan-school`
-   - Permissions: **Contents** (read + write), **Pull requests** (read + write), **Metadata** (read)
-3. Copy the token (`github_pat_...`)
-4. Set as GitHub secret:
-   ```bash
-   env -u GH_TOKEN gh secret set RENOVATE_TOKEN \
-     --repo ThomasGHenry/evan-school \
-     --body "github_pat_..."
-   ```
 
 ---
 
@@ -249,5 +231,4 @@ Once §7 is green, start with GitHub issue **#3 (Clerk application setup)** — 
 | Clerk keys in Vercel | preview + production sign-in |
 | Clerk webhook secret | issue #7 (user sync) |
 | Production `DATABASE_URL` in Vercel | production deploys |
-| `RENOVATE_TOKEN` GitHub secret | Renovate PRs (non-blocking) |
 | Smoke test push | confidence that CI + Vercel pipeline works end-to-end |
