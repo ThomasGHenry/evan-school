@@ -18,15 +18,23 @@ REPO_ROOT=""
 main() {
   require_inside_git_repo
   REPO_ROOT="$(git rev-parse --show-toplevel)"
-  check_no_bot_config
-  check_no_renovate_package_key
-  check_install_policy
-  check_pnpm_version
-  check_settings_location
+  check_bot_config_absent
+  check_pnpm_policy
   report_violations
 }
 
-check_no_bot_config() {
+check_bot_config_absent() {
+  check_no_bot_config_files
+  check_no_renovate_package_key
+}
+
+check_pnpm_policy() {
+  check_workspace_settings
+  check_pnpm_version
+  check_npmrc_settings
+}
+
+check_no_bot_config_files() {
   local path
   for path in "${FORBIDDEN_BOT_CONFIGS[@]}"; do
     _reject_if_present "$path"
@@ -40,12 +48,10 @@ check_no_renovate_package_key() {
   add_violation "package.json: top-level 'renovate' key is forbidden"
 }
 
-check_install_policy() {
+check_workspace_settings() {
   local workspace="$REPO_ROOT/pnpm-workspace.yaml"
   [ -f "$workspace" ] || return 0
-  _require_release_cooldown "$workspace"
-  _require_setting "$workspace" trustPolicy no-downgrade
-  _require_setting "$workspace" blockExoticSubdeps true
+  _require_install_policy "$workspace"
   _require_setting "$workspace" shamefullyHoist true
 }
 
@@ -56,7 +62,7 @@ check_pnpm_version() {
   _version_at_least "$version" "$MIN_PNPM_VERSION" || add_violation "package.json: packageManager pnpm must be >= $MIN_PNPM_VERSION (got: ${version:-missing})"
 }
 
-check_settings_location() {
+check_npmrc_settings() {
   local npmrc="$REPO_ROOT/.npmrc"
   [ -f "$npmrc" ] || return 0
   ! grep -q 'shamefully-hoist' "$npmrc" || add_violation ".npmrc: 'shamefully-hoist' belongs in pnpm-workspace.yaml as 'shamefullyHoist'"
@@ -68,6 +74,12 @@ _reject_if_present() {
 
 _json_has_top_level_key() {
   python3 -c 'import json,sys; sys.exit(0 if sys.argv[2] in json.load(open(sys.argv[1])) else 1)' "$1" "$2"
+}
+
+_require_install_policy() {
+  _require_release_cooldown "$1"
+  _require_setting "$1" trustPolicy no-downgrade
+  _require_setting "$1" blockExoticSubdeps true
 }
 
 _require_release_cooldown() {
