@@ -135,3 +135,11 @@ plant_file() {
   [ "$status" -eq 1 ]
   [[ "$output" == *"minimumReleaseAge"* ]]
 }
+
+@test "minimumReleaseAge below 10080 fails" {
+  git init -q .
+  printf 'minimumReleaseAge: 1440\n' > pnpm-workspace.yaml
+  run "$CHECK"
+  [ "$status" -eq 1 ]
+  [[ "$output" == *"minimumReleaseAge"*"10080"* ]]
+}

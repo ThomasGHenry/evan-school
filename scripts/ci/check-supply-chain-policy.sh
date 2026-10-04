@@ -10,6 +10,8 @@ readonly FORBIDDEN_BOT_CONFIGS=(
   .github/dependabot.yml .github/dependabot.yaml
 )
 
+readonly MIN_RELEASE_AGE_MINUTES=10080
+
 REPO_ROOT=""
 
 main() {
@@ -38,7 +40,7 @@ check_no_renovate_package_key() {
 check_install_policy() {
   local workspace="$REPO_ROOT/pnpm-workspace.yaml"
   [ -f "$workspace" ] || return 0
-  [ -n "$(_yaml_top_level_value "$workspace" minimumReleaseAge)" ] || add_violation "pnpm-workspace.yaml: top-level 'minimumReleaseAge' is required"
+  _require_release_cooldown "$workspace"
 }
 
 _reject_if_present() {
@@ -47,6 +49,13 @@ _reject_if_present() {
 
 _json_has_top_level_key() {
   python3 -c 'import json,sys; sys.exit(0 if sys.argv[2] in json.load(open(sys.argv[1])) else 1)' "$1" "$2"
+}
+
+_require_release_cooldown() {
+  local age
+  age="$(_yaml_top_level_value "$1" minimumReleaseAge)"
+  [[ "$age" =~ ^[0-9]+$ ]] && [ "$age" -ge "$MIN_RELEASE_AGE_MINUTES" ] && return 0
+  add_violation "pnpm-workspace.yaml: top-level 'minimumReleaseAge' must be >= $MIN_RELEASE_AGE_MINUTES (got: ${age:-missing})"
 }
 
 _yaml_top_level_value() {
