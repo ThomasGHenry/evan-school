@@ -27,3 +27,88 @@ teardown() {
   [ "$status" -eq 1 ]
   [[ "$output" == *"renovate.json"* ]]
 }
+
+plant_file() {
+  mkdir -p "$(dirname "$1")"
+  printf '{}\n' > "$1"
+}
+
+@test "renovate.json5 present fails naming the file" {
+  git init -q .
+  plant_file renovate.json5
+  run "$CHECK"
+  [ "$status" -eq 1 ]
+  [[ "$output" == *"renovate.json5"* ]]
+}
+
+@test ".renovaterc present fails naming the file" {
+  git init -q .
+  plant_file .renovaterc
+  run "$CHECK"
+  [ "$status" -eq 1 ]
+  [[ "$output" == *".renovaterc"* ]]
+}
+
+@test ".renovaterc.json present fails naming the file" {
+  git init -q .
+  plant_file .renovaterc.json
+  run "$CHECK"
+  [ "$status" -eq 1 ]
+  [[ "$output" == *".renovaterc.json"* ]]
+}
+
+@test ".renovaterc.json5 present fails naming the file" {
+  git init -q .
+  plant_file .renovaterc.json5
+  run "$CHECK"
+  [ "$status" -eq 1 ]
+  [[ "$output" == *".renovaterc.json5"* ]]
+}
+
+@test ".github/renovate.json present fails naming the file" {
+  git init -q .
+  plant_file .github/renovate.json
+  run "$CHECK"
+  [ "$status" -eq 1 ]
+  [[ "$output" == *".github/renovate.json"* ]]
+}
+
+@test ".github/renovate.json5 present fails naming the file" {
+  git init -q .
+  plant_file .github/renovate.json5
+  run "$CHECK"
+  [ "$status" -eq 1 ]
+  [[ "$output" == *".github/renovate.json5"* ]]
+}
+
+@test ".gitlab/renovate.json present fails naming the file" {
+  git init -q .
+  plant_file .gitlab/renovate.json
+  run "$CHECK"
+  [ "$status" -eq 1 ]
+  [[ "$output" == *".gitlab/renovate.json"* ]]
+}
+
+@test ".gitlab/renovate.json5 present fails naming the file" {
+  git init -q .
+  plant_file .gitlab/renovate.json5
+  run "$CHECK"
+  [ "$status" -eq 1 ]
+  [[ "$output" == *".gitlab/renovate.json5"* ]]
+}
+
+@test ".github/dependabot.yml present fails naming the file" {
+  git init -q .
+  plant_file .github/dependabot.yml
+  run "$CHECK"
+  [ "$status" -eq 1 ]
+  [[ "$output" == *".github/dependabot.yml"* ]]
+}
+
+@test ".github/dependabot.yaml present fails naming the file" {
+  git init -q .
+  plant_file .github/dependabot.yaml
+  run "$CHECK"
+  [ "$status" -eq 1 ]
+  [[ "$output" == *".github/dependabot.yaml"* ]]
+}
