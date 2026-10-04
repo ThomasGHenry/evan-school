@@ -11,6 +11,7 @@ readonly FORBIDDEN_BOT_CONFIGS=(
 )
 
 readonly MIN_RELEASE_AGE_MINUTES=10080
+readonly MIN_PNPM_VERSION=10.26.0
 
 REPO_ROOT=""
 
@@ -20,6 +21,7 @@ main() {
   check_no_bot_config
   check_no_renovate_package_key
   check_install_policy
+  check_pnpm_version
   report_violations
 }
 
@@ -45,6 +47,13 @@ check_install_policy() {
   _require_setting "$workspace" blockExoticSubdeps true
 }
 
+check_pnpm_version() {
+  local manifest="$REPO_ROOT/package.json" version
+  [ -f "$manifest" ] || return 0
+  version="$(_pnpm_version_of "$manifest")"
+  _version_at_least "$version" "$MIN_PNPM_VERSION" || add_violation "package.json: packageManager pnpm must be >= $MIN_PNPM_VERSION (got: ${version:-missing})"
+}
+
 _reject_if_present() {
   [ ! -e "$REPO_ROOT/$1" ] || add_violation "$1: automated dependency-update bot config is forbidden"
 }
@@ -64,6 +73,19 @@ _require_setting() {
   local actual
   actual="$(_yaml_top_level_value "$1" "$2")"
   [ "$actual" = "$3" ] || add_violation "pnpm-workspace.yaml: top-level '$2' must be '$3' (got: ${actual:-missing})"
+}
+
+_pnpm_version_of() {
+  local spec
+  spec="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1])).get("packageManager",""))' "$1")"
+  [[ "$spec" == pnpm@* ]] || return 0
+  spec="${spec#pnpm@}"
+  printf '%s\n' "${spec%%+*}"
+}
+
+_version_at_least() {
+  [ -n "$1" ] || return 1
+  [ "$(printf '%s\n%s\n' "$2" "$1" | sort -V | head -1)" = "$2" ]
 }
 
 _yaml_top_level_value() {

@@ -123,7 +123,7 @@ plant_file() {
 
 @test "package.json without renovate key passes" {
   git init -q .
-  printf '{"name":"x","dependencies":{"renovate-like":"1.0.0"}}\n' > package.json
+  printf '{"name":"x","packageManager":"pnpm@10.26.0","dependencies":{"renovate-like":"1.0.0"}}\n' > package.json
   run "$CHECK"
   [ "$status" -eq 0 ]
 }
@@ -166,4 +166,29 @@ plant_file() {
   run "$CHECK"
   [ "$status" -eq 1 ]
   [[ "$output" == *"blockExoticSubdeps"* ]]
+}
+
+write_compliant_workspace() {
+  printf 'minimumReleaseAge: 10080\ntrustPolicy: no-downgrade\nblockExoticSubdeps: true\n' > pnpm-workspace.yaml
+}
+
+write_package_manager() {
+  printf '{"name":"x","packageManager":"%s"}\n' "$1" > package.json
+}
+
+@test "full top-level install policy passes" {
+  git init -q .
+  write_compliant_workspace
+  write_package_manager pnpm@10.26.0
+  run "$CHECK"
+  [ "$status" -eq 0 ]
+}
+
+@test "packageManager pnpm below 10.26.0 fails" {
+  git init -q .
+  write_compliant_workspace
+  write_package_manager pnpm@10.25.0
+  run "$CHECK"
+  [ "$status" -eq 1 ]
+  [[ "$output" == *"packageManager"*"10.26.0"* ]]
 }
