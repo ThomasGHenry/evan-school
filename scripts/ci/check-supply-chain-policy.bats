@@ -169,7 +169,7 @@ plant_file() {
 }
 
 write_compliant_workspace() {
-  printf 'minimumReleaseAge: 10080\ntrustPolicy: no-downgrade\nblockExoticSubdeps: true\n' > pnpm-workspace.yaml
+  printf 'minimumReleaseAge: 10080\ntrustPolicy: no-downgrade\nblockExoticSubdeps: true\nshamefullyHoist: true\n' > pnpm-workspace.yaml
 }
 
 write_package_manager() {
@@ -209,4 +209,13 @@ write_package_manager() {
   run "$CHECK"
   [ "$status" -eq 1 ]
   [[ "$output" == *".npmrc"*"shamefully-hoist"* ]]
+}
+
+@test "missing top-level shamefullyHoist true fails" {
+  git init -q .
+  printf 'minimumReleaseAge: 10080\ntrustPolicy: no-downgrade\nblockExoticSubdeps: true\n' > pnpm-workspace.yaml
+  write_package_manager pnpm@10.26.0
+  run "$CHECK"
+  [ "$status" -eq 1 ]
+  [[ "$output" == *"shamefullyHoist"* ]]
 }

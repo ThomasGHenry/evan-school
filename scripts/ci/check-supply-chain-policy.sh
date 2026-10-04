@@ -46,6 +46,7 @@ check_install_policy() {
   _require_release_cooldown "$workspace"
   _require_setting "$workspace" trustPolicy no-downgrade
   _require_setting "$workspace" blockExoticSubdeps true
+  _require_setting "$workspace" shamefullyHoist true
 }
 
 check_pnpm_version() {
