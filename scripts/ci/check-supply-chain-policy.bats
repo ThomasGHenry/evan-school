@@ -112,3 +112,18 @@ plant_file() {
   [ "$status" -eq 1 ]
   [[ "$output" == *".github/dependabot.yaml"* ]]
 }
+
+@test "package.json with top-level renovate key fails" {
+  git init -q .
+  printf '{"name":"x","renovate":{"extends":["config:recommended"]}}\n' > package.json
+  run "$CHECK"
+  [ "$status" -eq 1 ]
+  [[ "$output" == *"package.json"*"renovate"* ]]
+}
+
+@test "package.json without renovate key passes" {
+  git init -q .
+  printf '{"name":"x","dependencies":{"renovate-like":"1.0.0"}}\n' > package.json
+  run "$CHECK"
+  [ "$status" -eq 0 ]
+}
