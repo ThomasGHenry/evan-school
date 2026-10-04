@@ -13,3 +13,17 @@ teardown() {
   [ "$status" -eq 1 ]
   [[ "$output" == *"not a git repository"* ]]
 }
+
+@test "clean repository passes" {
+  git init -q .
+  run "$CHECK"
+  [ "$status" -eq 0 ]
+}
+
+@test "renovate.json present fails naming the file" {
+  git init -q .
+  printf '{}\n' > renovate.json
+  run "$CHECK"
+  [ "$status" -eq 1 ]
+  [[ "$output" == *"renovate.json"* ]]
+}
