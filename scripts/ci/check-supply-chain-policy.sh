@@ -122,7 +122,22 @@ _ref_is_pinned() {
 }
 
 _list_action_refs() {
-  ( cd "$REPO_ROOT" && grep -HnE '^[[:space:]-]*uses:' .github/workflows/*.y*ml 2>/dev/null || true ) | sed -E 's/^([^:]+:[0-9]+):[[:space:]-]*uses:[[:space:]]*/\1 /'
+  local file
+  while IFS= read -r file; do
+    _grep_uses "$file"
+  done < <(_list_action_files) | _split_location_and_ref
+}
+
+_grep_uses() {
+  ( cd "$REPO_ROOT" && grep -HnE '^[[:space:]-]*uses:' "$1" || true )
+}
+
+_list_action_files() {
+  ( cd "$REPO_ROOT" && find .github/workflows .github/actions -type f \( -name '*.yml' -o -name '*.yaml' \) 2>/dev/null || true ) | sed 's|^\./||' | sort
+}
+
+_split_location_and_ref() {
+  sed -E 's/^([^:]+:[0-9]+):[[:space:]-]*uses:[[:space:]]*/\1 /'
 }
 
 _yaml_top_level_value() {

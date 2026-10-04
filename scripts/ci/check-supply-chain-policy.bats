@@ -246,3 +246,26 @@ write_workflow() {
   run "$CHECK"
   [ "$status" -eq 0 ]
 }
+
+@test "workflow action pinned to a short sha fails" {
+  git init -q .
+  write_workflow actions/checkout@08eba0b
+  run "$CHECK"
+  [ "$status" -eq 1 ]
+}
+
+@test "full sha followed by trailing text fails" {
+  git init -q .
+  write_workflow 'actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.1'
+  run "$CHECK"
+  [ "$status" -eq 1 ]
+}
+
+@test "composite action under .github/actions is scanned" {
+  git init -q .
+  mkdir -p .github/actions/setup
+  printf 'runs:\n  using: composite\n  steps:\n    - uses: actions/setup-node@v4\n' > .github/actions/setup/action.yml
+  run "$CHECK"
+  [ "$status" -eq 1 ]
+  [[ "$output" == *".github/actions/setup/action.yml:4"* ]]
+}
