@@ -41,6 +41,7 @@ check_install_policy() {
   local workspace="$REPO_ROOT/pnpm-workspace.yaml"
   [ -f "$workspace" ] || return 0
   _require_release_cooldown "$workspace"
+  _require_setting "$workspace" trustPolicy no-downgrade
 }
 
 _reject_if_present() {
@@ -56,6 +57,12 @@ _require_release_cooldown() {
   age="$(_yaml_top_level_value "$1" minimumReleaseAge)"
   [[ "$age" =~ ^[0-9]+$ ]] && [ "$age" -ge "$MIN_RELEASE_AGE_MINUTES" ] && return 0
   add_violation "pnpm-workspace.yaml: top-level 'minimumReleaseAge' must be >= $MIN_RELEASE_AGE_MINUTES (got: ${age:-missing})"
+}
+
+_require_setting() {
+  local actual
+  actual="$(_yaml_top_level_value "$1" "$2")"
+  [ "$actual" = "$3" ] || add_violation "pnpm-workspace.yaml: top-level '$2' must be '$3' (got: ${actual:-missing})"
 }
 
 _yaml_top_level_value() {

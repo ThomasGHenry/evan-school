@@ -143,3 +143,19 @@ plant_file() {
   [ "$status" -eq 1 ]
   [[ "$output" == *"minimumReleaseAge"*"10080"* ]]
 }
+
+@test "minimumReleaseAge nested under security fails" {
+  git init -q .
+  printf 'security:\n  minimumReleaseAge: 10080\n' > pnpm-workspace.yaml
+  run "$CHECK"
+  [ "$status" -eq 1 ]
+  [[ "$output" == *"minimumReleaseAge"* ]]
+}
+
+@test "missing trustPolicy no-downgrade fails" {
+  git init -q .
+  printf 'minimumReleaseAge: 10080\n' > pnpm-workspace.yaml
+  run "$CHECK"
+  [ "$status" -eq 1 ]
+  [[ "$output" == *"trustPolicy"* ]]
+}
