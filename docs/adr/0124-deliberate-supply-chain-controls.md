@@ -71,8 +71,18 @@ through `infra/github` OpenTofu, tracked separately.
 
 ## Audit Ignore List
 
-Populated when the audit gate lands. Each entry: advisory ID, package, reason no fix is
-reachable, review date.
+Configured in `pnpm-workspace.yaml` `auditConfig.ignoreGhsas`. Each entry is a
+production advisory with no fix reachable inside the declaring package's version
+constraint at a release at least 7 days old (checked 2026-10-04). Review date for all
+entries: 2027-01-04, or earlier when the named parent publishes a release that lifts
+the constraint.
+
+| Advisory | Package (locked) | Patched | Why no fix is reachable | Review |
+|---|---|---|---|---|
+| GHSA-6g55-p6wh-862q | `postcss@8.4.31` via `next` | `>=8.5.12` | `next@15.5.24`, `15.5.25` and `15.5.26` all declare `postcss: 8.4.31` exactly; next 16 is a major upgrade outside this policy change | 2027-01-04 |
+| GHSA-r28c-9q8g-f849 | `postcss@8.4.31` via `next` | `>=8.5.18` | same as above | 2027-01-04 |
+| GHSA-ggr8-5vv4-36mx | `deepmerge-ts@7.1.5` via `prisma` > `@prisma/config` | `>=8.0.0` | `@prisma/config@7.8.0` and `@7.10.0` (latest 7.x at least 7 days old) declare `deepmerge-ts: 7.1.5` exactly | 2027-01-04 |
+| GHSA-3f6p-5ww8-9rcr | `mysql2@3.15.3` via `prisma` | `>=3.22.0` | `prisma@7.8.0` and `@7.10.0` declare `mysql2: 3.15.3` exactly; this project's datasource `provider` is `postgresql` | 2027-01-04 |
 
 ## Consequences
 

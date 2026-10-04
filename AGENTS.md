@@ -93,7 +93,7 @@ pnpm run db:studio
 
 - **Phase 0** (governance, all parallel): `changes` (dorny/paths-filter), `gitleaks`,
   `actionlint`, `validate-adrs`, `validate-commits`, `shellcheck`,
-  `validate-bats-coverage`, `validate-speckit`, `supply-chain-policy`, `prisma-migrate-check`
+  `validate-bats-coverage`, `validate-speckit`, `supply-chain-policy`, `pnpm-audit`, `prisma-migrate-check`
 - **Phase 1** (compute, path-filtered, gated by Phase 0): `typecheck`, `lint`, `test`,
   `build`; `coverage-gate` downloads LCOV artifact and runs `ratchet-coverage.sh`
 - **Phase 2** (gated by Phase 1): E2E smoke via `resolve-vercel-deployment.sh` + Playwright
