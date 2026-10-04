@@ -35,6 +35,10 @@ supported by the package manager version in use.
   support it THEN CI fails.
 - GIVEN the cooldown is active WHEN a developer installs dependencies THEN versions
   published less than 7 days ago are not installed.
+- GIVEN the workspace configuration WHEN CI runs THEN it fails unless trust-downgrade
+  protection and the block on non-registry transitive sources are both enabled.
+- GIVEN the package manager settings WHEN CI runs THEN it fails if a non-auth setting
+  lives in `.npmrc` instead of the workspace configuration (hoisting moves there).
 
 ### S3 — CI actions are immutable references (#68)
 
@@ -42,10 +46,14 @@ supported by the package manager version in use.
   fails naming the file, line and reference.
 - GIVEN a workflow referencing a local action WHEN CI runs THEN it passes.
 
-### S4 — Known high-severity advisories block merges (#69)
+### S4 — Known high-severity advisories in production dependencies block merges (#69)
 
-- GIVEN the lockfile contains a dependency with a high or critical advisory WHEN CI runs
-  THEN it fails.
+- GIVEN the lockfile contains a production dependency with a high or critical advisory
+  that is not on the recorded ignore list WHEN CI runs THEN it fails.
+- GIVEN only development dependencies carry high advisories WHEN CI runs THEN they are
+  reported and CI does not fail on them.
+- GIVEN an advisory has no fix reachable under the 7-day cooldown WHEN it is ignored THEN
+  the ignore is recorded in ADR 0124 with a reason and a review date.
 - GIVEN the gate is introduced WHEN it first runs on `main` THEN it passes (remediation
   precedes the gate).
 
@@ -54,8 +62,9 @@ supported by the package manager version in use.
 - SC1: No update-bot configuration exists, and adding one fails CI.
 - SC2: A release cooldown of >= 10080 minutes is active for every install, enforced by CI.
 - SC3: 100% of remote action references in workflows are full commit identifiers.
-- SC4: A known-advisory gate at high severity runs on every push and is part of the
-  single required status check.
+- SC4: A known-advisory gate at high severity on production dependencies runs on every
+  push and is part of the single required status check; development findings are
+  reported without blocking.
 - SC5: Every existing CI job continues to pass; the single required status check is
   unchanged.
 
@@ -63,15 +72,20 @@ supported by the package manager version in use.
 
 - Enabling notify-only security alerts (follow-up #70, requires infrastructure bootstrap
   #29 and the IaC pipeline).
-- Rewording constitution non-negotiables 15 and 16 (owner decision; see plan Open
-  Questions).
 - Changing template meta-ADR 0021 (template-owned; upstream concern).
 - Upstreaming to tgh-template (noted; separate repository).
 
-## Open Questions (owner)
+## Resolved Decisions (owner, 2026-10-04)
 
-- Q1: Advisory gate scope — all dependencies or production only; policy for advisories
-  with no patched version.
-- Q2: Adopt `trustPolicy: no-downgrade` and `blockExoticSubdeps: true` alongside the
-  cooldown (requires a newer package manager than the cooldown alone).
-- Q3: Wording of constitution non-negotiables 15 and 16 after the bot is removed.
+- Q1: Gate on production dependencies only at high severity; development findings are
+  reported, non-blocking. Unfixable advisories go into the package manager's audit
+  ignore configuration and are listed in ADR 0124 with reason and review date. No
+  ignoring of registry errors.
+- Q2: Adopt trust-downgrade protection and the transitive exotic-source block alongside
+  the cooldown.
+- Q3: Constitution non-negotiable 15 becomes "No automated dependency-update bots;
+  updates are deliberate with a >= 7-day release cooldown"; 16 is reworded to match.
+  The `needs-adr-review` label stays for human major upgrades, without the Renovate
+  reference.
+- Q4: The policy check forbids `.github/dependabot.yml`.
+- Q5: Action pins carry the SHA only (no trailing tag marker, per the no-comments rule).
