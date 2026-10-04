@@ -63,9 +63,9 @@ Delivery: one issue → one branch → one PR ("Closes #N"), merged before the n
 
 ## Slice S4 — pnpm audit gate (#69)
 
-- [ ] T038 RED (real repo): `pnpm audit --prod --audit-level=high` exits 1; record counts and advisory list.
-- [ ] T039 GREEN (real repo): deliberate updates for fixable advisories whose patched version is >= 7 days old; add the rest to `auditConfig.ignoreGhsas`; record each in ADR 0124 Audit Ignore List with reason and review date. Audit exits 0. `pnpm run typecheck lint test build`.
-- [ ] T040 Wire: `pnpm-audit` Phase 0 job (plan D2: non-blocking `--dev` step, blocking `--prod` step) with SHA-pinned `uses:`; add to the four Phase 1 `needs:` and `commit-validation` `needs:`. Run `run-actionlint.sh` and S.
+- [x] T038 RED (real repo): `pnpm audit --prod --audit-level=high` exits 1; record counts and advisory list.
+- [x] T039 GREEN (real repo): deliberate updates for fixable advisories whose patched version is >= 7 days old; add the rest to `auditConfig.ignoreGhsas`; record each in ADR 0124 Audit Ignore List with reason and review date. Audit exits 0. `pnpm run typecheck lint test build`.
+- [x] T040 Wire: `pnpm-audit` Phase 0 job (plan D2: non-blocking `--dev` step, blocking `--prod` step) with SHA-pinned `uses:`; add to the four Phase 1 `needs:` and `commit-validation` `needs:`. Run `run-actionlint.sh` and S.
 
 ## Slice S5 — governance close-out
 
