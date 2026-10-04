@@ -34,20 +34,20 @@ Delivery: one issue → one branch → one PR ("Closes #N"), merged before the n
 
 ## Slice S2 — pnpm install policy (#67)
 
-- [ ] T015 RED: B test "pnpm-workspace.yaml without minimumReleaseAge fails naming the key".
-- [ ] T016 GREEN: `check_install_policy` reads top-level keys via `python3 yaml.safe_load`.
-- [ ] T017 RED: B test "minimumReleaseAge 1440 fails (below 10080)". GREEN: numeric comparison.
-- [ ] T018 RED: B test "minimumReleaseAge nested under security fails" (c60fc00 shape). GREEN or record as guard.
-- [ ] T019 RED: B test "missing trustPolicy no-downgrade fails". GREEN.
-- [ ] T020 RED: B test "missing blockExoticSubdeps true fails". GREEN.
-- [ ] T021 RED: B test "full top-level policy passes" with a supporting `packageManager`.
-- [ ] T022 RED: B test "packageManager pnpm@10.25.0 fails (below 10.26.0)". GREEN: `check_pnpm_version` with `sort -V`.
-- [ ] T023 RED: B test "packageManager pnpm@10.26.0 passes".
-- [ ] T024 RED: B test ".npmrc containing shamefully-hoist fails". GREEN: `check_settings_location`.
-- [ ] T025 RED: B test "missing top-level shamefullyHoist true fails". GREEN.
-- [ ] T026 REFACTOR: extract thresholds as readonly constants; run B.
-- [ ] T027 RED (real repo): S exits 1 naming `minimumReleaseAge`, `trustPolicy`, `blockExoticSubdeps`, `packageManager`, `shamefully-hoist`.
-- [ ] T028 GREEN (real repo): re-verify `npm view pnpm time`; `packageManager` to newest 10.x >= 7 days old; add the four top-level keys; remove `shamefully-hoist=true` from `.npmrc` (delete `.npmrc` if empty); `pnpm install --frozen-lockfile`; `pnpm run typecheck lint test build`. S exits 0.
+- [x] T015 RED: B test "pnpm-workspace.yaml without minimumReleaseAge fails naming the key".
+- [x] T016 GREEN: `check_install_policy` reads top-level keys via `python3 yaml.safe_load`.
+- [x] T017 RED: B test "minimumReleaseAge 1440 fails (below 10080)". GREEN: numeric comparison.
+- [x] T018 RED: B test "minimumReleaseAge nested under security fails" (c60fc00 shape). Observed GREEN on first run; kept as guard.
+- [x] T019 RED: B test "missing trustPolicy no-downgrade fails". GREEN.
+- [x] T020 RED: B test "missing blockExoticSubdeps true fails". GREEN.
+- [x] T021 RED: B test "full top-level policy passes" with a supporting `packageManager`.
+- [x] T022 RED: B test "packageManager pnpm@10.25.0 fails (below 10.26.0)". GREEN: `check_pnpm_version` with `sort -V`.
+- [x] T023 RED: B test "packageManager with integrity suffix at supported version passes". Observed GREEN on first run; kept as guard (10.26.0 boundary covered by "full top-level install policy passes").
+- [x] T024 RED: B test ".npmrc containing shamefully-hoist fails". GREEN: `check_settings_location`.
+- [x] T025 RED: B test "missing top-level shamefullyHoist true fails". GREEN.
+- [x] T026 REFACTOR: extract thresholds as readonly constants; run B.
+- [x] T027 RED (real repo): S exits 1 naming `minimumReleaseAge`, `trustPolicy`, `blockExoticSubdeps`, `packageManager`, `shamefully-hoist`.
+- [x] T028 GREEN (real repo): re-verify `npm view pnpm time`; `packageManager` to newest 10.x >= 7 days old; add the four top-level keys; remove `shamefully-hoist=true` from `.npmrc` (delete `.npmrc` if empty); `pnpm install --frozen-lockfile`; `pnpm run typecheck lint test build`. S exits 0.
 
 ## Slice S3 — SHA-pinned actions (#68)
 

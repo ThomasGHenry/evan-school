@@ -123,7 +123,99 @@ plant_file() {
 
 @test "package.json without renovate key passes" {
   git init -q .
-  printf '{"name":"x","dependencies":{"renovate-like":"1.0.0"}}\n' > package.json
+  printf '{"name":"x","packageManager":"pnpm@10.26.0","dependencies":{"renovate-like":"1.0.0"}}\n' > package.json
   run "$CHECK"
   [ "$status" -eq 0 ]
+}
+
+@test "pnpm-workspace.yaml without minimumReleaseAge fails naming the key" {
+  git init -q .
+  printf 'packages:\n  - apps/*\n' > pnpm-workspace.yaml
+  run "$CHECK"
+  [ "$status" -eq 1 ]
+  [[ "$output" == *"minimumReleaseAge"* ]]
+}
+
+@test "minimumReleaseAge below 10080 fails" {
+  git init -q .
+  printf 'minimumReleaseAge: 1440\n' > pnpm-workspace.yaml
+  run "$CHECK"
+  [ "$status" -eq 1 ]
+  [[ "$output" == *"minimumReleaseAge"*"10080"* ]]
+}
+
+@test "minimumReleaseAge nested under security fails" {
+  git init -q .
+  printf 'security:\n  minimumReleaseAge: 10080\n' > pnpm-workspace.yaml
+  run "$CHECK"
+  [ "$status" -eq 1 ]
+  [[ "$output" == *"minimumReleaseAge"* ]]
+}
+
+@test "missing trustPolicy no-downgrade fails" {
+  git init -q .
+  printf 'minimumReleaseAge: 10080\n' > pnpm-workspace.yaml
+  run "$CHECK"
+  [ "$status" -eq 1 ]
+  [[ "$output" == *"trustPolicy"* ]]
+}
+
+@test "missing blockExoticSubdeps true fails" {
+  git init -q .
+  printf 'minimumReleaseAge: 10080\ntrustPolicy: no-downgrade\n' > pnpm-workspace.yaml
+  run "$CHECK"
+  [ "$status" -eq 1 ]
+  [[ "$output" == *"blockExoticSubdeps"* ]]
+}
+
+write_compliant_workspace() {
+  printf 'minimumReleaseAge: 10080\ntrustPolicy: no-downgrade\nblockExoticSubdeps: true\nshamefullyHoist: true\n' > pnpm-workspace.yaml
+}
+
+write_package_manager() {
+  printf '{"name":"x","packageManager":"%s"}\n' "$1" > package.json
+}
+
+@test "full top-level install policy passes" {
+  git init -q .
+  write_compliant_workspace
+  write_package_manager pnpm@10.26.0
+  run "$CHECK"
+  [ "$status" -eq 0 ]
+}
+
+@test "packageManager pnpm below 10.26.0 fails" {
+  git init -q .
+  write_compliant_workspace
+  write_package_manager pnpm@10.25.0
+  run "$CHECK"
+  [ "$status" -eq 1 ]
+  [[ "$output" == *"packageManager"*"10.26.0"* ]]
+}
+
+@test "packageManager with integrity suffix at supported version passes" {
+  git init -q .
+  write_compliant_workspace
+  write_package_manager pnpm@10.34.5+sha512.abc123
+  run "$CHECK"
+  [ "$status" -eq 0 ]
+}
+
+@test ".npmrc containing shamefully-hoist fails" {
+  git init -q .
+  write_compliant_workspace
+  write_package_manager pnpm@10.26.0
+  printf 'shamefully-hoist=true\n' > .npmrc
+  run "$CHECK"
+  [ "$status" -eq 1 ]
+  [[ "$output" == *".npmrc"*"shamefully-hoist"* ]]
+}
+
+@test "missing top-level shamefullyHoist true fails" {
+  git init -q .
+  printf 'minimumReleaseAge: 10080\ntrustPolicy: no-downgrade\nblockExoticSubdeps: true\n' > pnpm-workspace.yaml
+  write_package_manager pnpm@10.26.0
+  run "$CHECK"
+  [ "$status" -eq 1 ]
+  [[ "$output" == *"shamefullyHoist"* ]]
 }
