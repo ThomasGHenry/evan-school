@@ -9,7 +9,6 @@
 | `CF_R2_SECRET_ACCESS_KEY` | `infra.yml` | Cloudflare R2 secret key for Terraform state backend |
 | `VERCEL_TOKEN` | `2-e2e.yml`, `3-promote.yml` | Vercel API + CLI authentication |
 | `DATABASE_URL_PROD` | `3-promote.yml` | Production database connection string |
-| `RENOVATE_TOKEN` | `renovate.yml` | Fine-grained PAT for Renovate PRs |
 
 ## GitHub Repository Variables
 
