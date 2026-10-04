@@ -127,6 +127,16 @@ Optional sections: `## Hypothesis` (pre-implementation), `## Findings` (post-imp
 
 Validate locally: `bash scripts/ci/validate-adrs.sh docs/adr`
 
+## Issue triage and work selection
+
+Every open issue carries exactly one Type and one Status label (`.github/LABEL_TAXONOMY.md`).
+An issue waiting on another records it as a body line `Depends on #N`; the dependency, not the
+status label, marks it blocked.
+
+When running the work-selection rubric, the eligible set (Criterion 2) is open, unblocked issues
+labelled `needs-spec` **or** `needs-adr`. An ADR that unblocks other work competes on force
+multiplier like any other issue.
+
 ## Shell script conventions
 
 Every `scripts/ci/*.sh` must have a sibling `scripts/ci/*.bats` or `validate-bats-coverage`
