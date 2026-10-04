@@ -192,3 +192,21 @@ write_package_manager() {
   [ "$status" -eq 1 ]
   [[ "$output" == *"packageManager"*"10.26.0"* ]]
 }
+
+@test "packageManager with integrity suffix at supported version passes" {
+  git init -q .
+  write_compliant_workspace
+  write_package_manager pnpm@10.34.5+sha512.abc123
+  run "$CHECK"
+  [ "$status" -eq 0 ]
+}
+
+@test ".npmrc containing shamefully-hoist fails" {
+  git init -q .
+  write_compliant_workspace
+  write_package_manager pnpm@10.26.0
+  printf 'shamefully-hoist=true\n' > .npmrc
+  run "$CHECK"
+  [ "$status" -eq 1 ]
+  [[ "$output" == *".npmrc"*"shamefully-hoist"* ]]
+}

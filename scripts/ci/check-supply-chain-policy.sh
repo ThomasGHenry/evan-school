@@ -22,6 +22,7 @@ main() {
   check_no_renovate_package_key
   check_install_policy
   check_pnpm_version
+  check_settings_location
   report_violations
 }
 
@@ -52,6 +53,12 @@ check_pnpm_version() {
   [ -f "$manifest" ] || return 0
   version="$(_pnpm_version_of "$manifest")"
   _version_at_least "$version" "$MIN_PNPM_VERSION" || add_violation "package.json: packageManager pnpm must be >= $MIN_PNPM_VERSION (got: ${version:-missing})"
+}
+
+check_settings_location() {
+  local npmrc="$REPO_ROOT/.npmrc"
+  [ -f "$npmrc" ] || return 0
+  ! grep -q 'shamefully-hoist' "$npmrc" || add_violation ".npmrc: 'shamefully-hoist' belongs in pnpm-workspace.yaml as 'shamefullyHoist'"
 }
 
 _reject_if_present() {
