@@ -69,7 +69,7 @@ Delivery: one issue → one branch → one PR ("Closes #N"), merged before the n
 
 ## Slice S5 — governance close-out
 
-- [ ] T041 `.specify/memory/constitution.md`: CI Gate list, pnpm Tech Stack row, non-negotiables 15/16.
-- [ ] T042 `.github/LABEL_TAXONOMY.md:20` and `infra/github/main.tf:94` description: drop Renovate reference (Tofu applies via pipeline).
-- [ ] T043 ADR 0124 → `status: accepted`, `implementation: scripts/ci/check-supply-chain-policy.sh`, `## Findings`. Run `validate-adrs.sh docs/adr`.
-- [ ] T044 `/qreview` against the completeness surface; `bats scripts/ci/*.bats`; close #65 when #66-#69 are closed.
+- [x] T041 `.specify/memory/constitution.md`: CI Gate list, pnpm Tech Stack row, non-negotiables 15/16.
+- [x] T042 `.github/LABEL_TAXONOMY.md:20`: drop Renovate reference, category Manual. `infra/github/main.tf:94` description is already "Major dependency update" (no Renovate reference); no Tofu change needed.
+- [x] T043 ADR 0124 → `status: accepted`, `implementation: scripts/ci/check-supply-chain-policy.sh`, `## Findings`. Run `validate-adrs.sh docs/adr`.
+- [x] T044 `/qreview` against the completeness surface; `bats scripts/ci/*.bats`; close #65 when #66-#69 are closed.
