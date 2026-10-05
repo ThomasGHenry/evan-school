@@ -81,8 +81,10 @@ Anyone arriving from Google, ChatGPT, social, or direct link.
 Subscribed via MailChimp. Has an account (created when they sign up or enroll). Has not necessarily paid.
 
 **Can access:** everything above, plus:
-- Protected resources (`/resources/*`)
+- Subscriber-tier resources (`/resources/*` items with `access: subscriber`)
 - Account settings
+
+Subscriber access requires BOTH a signed-in account AND an active MailChimp subscription. Unsubscribing removes subscriber-tier access, including for paid students (their paid entitlements are unaffected). ADR 0125.
 
 **Cannot access:** course content, student dashboard (unless also enrolled), admin
 
@@ -92,10 +94,11 @@ Subscribed via MailChimp. Has an account (created when they sign up or enroll). 
 
 ### Tier 2 — Paid Student
 
-Has purchased at least one course. Access is scoped per course — buying Course A does not unlock Course B.
+Holds at least one entitlement: membership of a specific class cohort (e.g. Fall 2026 *Attachment and the Best Self*) or a purchased standalone product. Access is scoped per cohort or product — an entitlement for one does not unlock another. Entitlements never expire and are additive: a repeat student keeps every cohort's materials. ADR 0125.
 
 **Can access:** everything above, plus:
-- Course content for each course purchased (`/courses/[slug]/content`)
+- Course content for each cohort they belong to (`/courses/[slug]/content`)
+- Purchased products
 - Student dashboard (`/dashboard`)
 
 **Cannot access:** other students' courses, admin
@@ -190,10 +193,11 @@ Access tier shown in brackets: `[P]` Public · `[M]` Mailing List · `[S]` Paid 
 /ipf-weekend-retreat                     [P]  Event page (top-level, not /events/[slug])
 
 /courses/i-can-relate                    [P]  Course marketing page
-/courses/[slug]/content                  [S]  Course content (paid, per-course scoped)
+/courses/[slug]/content                  [S]  Course content (paid, per-cohort scoped)
 
+/resources                               [P]  Public catalogue of all tiers (badge + teaser)
 /resources/introductory-ipf-practice     [P]  Free public resource (no auth gate)
-/resources/[slug]                        [M]  Protected resource (subscriber+)
+/resources/[slug]                        [P/M/S]  Item gated by its access tier (ADR 0125)
 
 /dashboard                               [S]  Student dashboard
 /checkout                                [P]  Checkout
@@ -237,12 +241,12 @@ Access tier shown in brackets: `[P]` Public · `[M]` Mailing List · `[S]` Paid 
 - Evan creates and publishes guides via Payload CMS admin panel.
 - Publication cadence: 1 guide per week over 11 weeks (not all at launch).
 
-### 6.3 Protected Resources (`/resources`)
+### 6.3 Resources Catalogue (`/resources`)
 
-- Mailing list members only (Tier 1+). Requires authentication.
-- Free content — audio, PDFs, guided meditations, etc. — used as a lead magnet and funnel incentive.
-- Index page shows available resources to authenticated users.
-- Individual resource pages (`/resources/[slug]`) gated behind login check.
+- Index page is PUBLIC and crawlable: lists resources of every tier with an access badge and a teaser description (ADR 0125, superseding ADR 0122).
+- Each resource carries an access tier: `public` (renders to everyone, indexable), `subscriber` (signed-in + active MailChimp subscription), or `paid` (entitlement for the referenced cohort or product).
+- Item pages (`/resources/[slug]`) render the content, a sign-up prompt, or a purchase prompt according to the visitor's access.
+- Subscriber-tier content — audio, PDFs, guided meditations — is the mailing-list lead magnet.
 - Evan manages via Payload CMS admin panel.
 
 ### 6.4 Course Marketing Pages (`/courses`, `/courses/[slug]`)
@@ -254,9 +258,9 @@ Access tier shown in brackets: `[P]` Public · `[M]` Mailing List · `[S]` Paid 
 
 ### 6.5 Course Content (`/courses/[slug]/content`)
 
-Paid students only, scoped to their enrolled course(s).
+Paid students only, scoped to the cohort(s) they hold entitlements for. Access is permanent (ADR 0125).
 
-**Content structure per course:**
+**Content structure per cohort:**
 
 | Section | Timing | Notes |
 |---|---|---|
@@ -278,14 +282,15 @@ Evan updates content via Payload CMS admin panel.
 
 ### 6.7 Checkout & Enrollment (`/checkout`)
 
-- Triggered from course marketing page CTA.
-- Payment: Stripe. `payment_intent.succeeded` webhook provisions access.
-- On successful payment:
+- Triggered from a course (cohort) marketing page CTA or a product page CTA.
+- Payment: Stripe. `payment_intent.succeeded` webhook provisions access, idempotent on the Stripe event id.
+- On successful payment, inside one Payload transaction (ADR 0125):
   - Account created (or existing account linked)
-  - Course access row provisioned in DB
+  - Permanent Entitlement created for the purchased cohort or product
   - Student added to MailChimp "paid students" segment
   - Confirmation email sent (via MailChimp or transactional email)
 - No subscription billing. Single-transaction purchases only.
+- At launch, one placeholder product is live and visible to exercise the purchase → entitlement flow and gather feedback.
 
 ### 6.8 Auth Pages
 
@@ -314,13 +319,14 @@ Payload CMS auto-generated admin panel — available from Phase 1. Evan can mana
 - Event listings
 - `/ideal-parent-figure-protocol` flagship hub
 
-### Protected content (mailing list tier)
+### Subscriber content (mailing list tier)
 - Audio recordings, PDFs, guided meditations offered as list incentives
-- Not available via direct URL — requires authenticated session
+- Listed publicly with a teaser; content requires a signed-in account with an active subscription
 
-### Paid course content (student tier, per-course)
-- Intro doc, setting the stage, Zoom link, recording link, meditation resources
-- Scoped: student only sees courses they paid for
+### Paid content (entitlement tier, per cohort or product)
+- Cohort materials: intro doc, setting the stage, Zoom link, recording link, meditation resources
+- Standalone products
+- Scoped: a student only sees cohorts and products they hold entitlements for; entitlements are permanent
 
 ### Admin-managed
 - All of the above, editable via Payload CMS admin panel
@@ -340,6 +346,7 @@ Payload CMS auto-generated admin panel — available from Phase 1. Evan can mana
 | Frontend framework | Next.js (App Router) | Settled | SSG for public pages (SEO), SSR for auth routes. |
 | Hosting | Vercel | Settled | Native Next.js integration, edge CDN, CI/CD. |
 | Database | PostgreSQL (Neon) | Settled | Neon chosen for copy-on-write branching — instant prod-data clone per PR for migration rehearsal. Audit pricing cliff before launch (§11 Q5). |
+| Data model / ORM | Payload CMS (`@payloadcms/db-postgres`) | Settled | ADR 0125. Payload is the sole schema and migration owner; no Prisma. Drizzle available via the adapter for raw queries. |
 | Authentication | Payload CMS | Settled | ADR 0108. Payload Users collection with role field. `payload-token` cookie in middleware. Single source of truth — no Clerk/DB sync. |
 | Payments | Stripe | Settled | ADR 0106. `payment_intent.succeeded` webhook provisions enrollment. No PayPal. |
 | Email / CRM | MailChimp (existing) | Settled | Keep existing account. Segment by tier. Drip and upsell sequences. |
@@ -348,16 +355,18 @@ Payload CMS auto-generated admin panel — available from Phase 1. Evan can mana
 | CMS (content) | Payload CMS | Settled | ADR 0108. Auto-generated admin panel available Phase 1. Evan edits without a developer from day one. |
 | Community | Circle.so or custom | Future | Not in MVP. |
 
-### Database schema (sketch)
+### Payload collections (sketch — ADR 0125)
 
 ```
-users           id, email, password_hash, role, mailchimp_id, created_at
-courses         id, slug, title, description, zoom_link, recording_url, status, published_at
-course_content  id, course_id, section (enum), content_type, content_url, sort_order
-enrollments     id, user_id, course_id, paid_at, payment_ref, access_granted
-guides          id, slug, title, body, direct_answer, published_at, seo_meta
-resources       id, slug, title, content_type, content_url, published_at
-events          id, slug, title, description, starts_at, ends_at, status, published_at
+users           email, role, mailchimp_id, subscription_status
+courses         slug, title, description, status, published_at
+cohorts         course, label, starts_at, ends_at, zoom_link
+products        slug, title, description, price_ref, status
+entitlements    user, cohort | product, granted_at, stripe_event_id  (permanent, additive)
+course_content  cohort, section (enum), content_type, content_url, sort_order, access
+guides          slug, title, body, direct_answer, published_at, seo_meta
+resources       slug, title, teaser, content_type, content_url, access, cohort | product, published_at
+events          slug, title, description, starts_at, ends_at, status, published_at
 ```
 
 ---
