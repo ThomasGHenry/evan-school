@@ -346,7 +346,7 @@ Payload CMS auto-generated admin panel — available from Phase 1. Evan can mana
 | Frontend framework | Next.js (App Router) | Settled | SSG for public pages (SEO), SSR for auth routes. |
 | Hosting | Vercel | Settled | Native Next.js integration, edge CDN, CI/CD. |
 | Database | PostgreSQL (Neon) | Settled | Neon chosen for copy-on-write branching — instant prod-data clone per PR for migration rehearsal. Audit pricing cliff before launch (§11 Q5). |
-| Data model / ORM | Payload CMS (`@payloadcms/db-postgres`) | Proposed | ADR 0125. Payload is the sole schema and migration owner; no Prisma. Drizzle available via the adapter for raw queries. |
+| Data model / ORM | Payload CMS (`@payloadcms/db-postgres`) | Settled | ADR 0125. Payload is the sole schema and migration owner; no Prisma. Drizzle available via the adapter for raw queries. |
 | Authentication | Payload CMS | Settled | ADR 0108. Payload Users collection with role field. `payload-token` cookie in middleware. Single source of truth — no Clerk/DB sync. |
 | Payments | Stripe | Settled | ADR 0106. `payment_intent.succeeded` webhook provisions enrollment. No PayPal. |
 | Email / CRM | MailChimp (existing) | Settled | Keep existing account. Segment by tier. Drip and upsell sequences. |

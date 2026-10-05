@@ -1,5 +1,5 @@
 ---
-status: proposed
+status: accepted
 date: 2026-10-04
 tags: [architecture, auth, data-model]
 supersedes: 0122-resources-index-visibility.md
